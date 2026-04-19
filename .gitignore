@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node / Next.js (apps/web)
+node_modules/
+.next/
+out/
+build/
+dist/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+# Python (apps/api)
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.uv-cache/
+
+# Lumen runtime data (per ADR-0001 D5: ChromaDB embedded + SQLite)
+apps/api/data/
+!apps/api/data/.gitkeep
+
+# Design workflow (per design-workflow skill)
+docs/designs/**/screenshots/.tmp/
+
+# Test artifacts
+coverage/
+*.lcov
+playwright-report/
+test-results/
