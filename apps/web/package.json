@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sync:tokens": "mkdir -p src/styles && cp ../../docs/designs/lumen/tokens/tokens.css ../../docs/designs/lumen/tokens/tailwind-theme.css src/styles/",
+    "sync:tokens": "mkdir -p src/styles && cp ../../docs/designs/lumen/tokens/tokens.css ../../docs/designs/lumen/tokens/tailwind-theme.css ../../docs/designs/lumen/tokens/tokens.ts src/styles/",
     "test:e2e": "playwright test"
   },
   "dependencies": {
