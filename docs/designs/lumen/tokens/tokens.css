@@ -1,0 +1,140 @@
+/**
+ * Lumen Design Tokens — CSS Custom Properties
+ *
+ * Source: tokens.w3c.json (DTCG spec, SSOT)
+ * Consumers: tailwind-theme.css (`@theme inline` layer), tokens.ts (runtime refs)
+ *
+ * Dark is the default theme. `[data-theme="light"]` overrides themed tokens.
+ *
+ * Naming note:
+ *   Tokens that collide with Tailwind v4 theme namespaces (radius / shadow / font)
+ *   use the `--lumen-*` prefix as their source name. They are re-exposed under the
+ *   Tailwind namespace by `tailwind-theme.css` (e.g. `--radius-lg: var(--lumen-radius-lg)`).
+ *   Component contracts reference the Tailwind-namespace name (e.g. `--radius-lg`) —
+ *   the two files resolve to the same value at the consumption layer.
+ */
+
+:root {
+  /* ---------- Color · themed (default = dark) ---------- */
+  --bg: #0A0A0B;
+  --surface: #18181B;
+  --surface-elevated: #27272A;
+  --border: #27272A;
+  --border-subtle: #1F1F23;
+  --fg: #FAFAFA;
+  --fg-muted: #A1A1AA;
+  --fg-subtle: #71717A;
+  --ring: #E4E4E7;
+
+  --track-web-fg: #0EA5E9;
+  --track-kb-fg: #8B5CF6;
+  --conflict-fg: #FF8400;
+  --citation-highlight: #FDE68A;
+  --lumen-shadow-color: #00000066;
+
+  /* ---------- Color · non-themed ---------- */
+  --primary: #1E40AF;
+  --primary-fg: #FFFFFF;
+  --primary-hover: #1E3A8A;
+
+  --track-web-bg: #0EA5E91A;
+  --track-web-border: #0EA5E9;
+  --track-web-muted: #0369A1;
+
+  --track-kb-bg: #8B5CF61A;
+  --track-kb-border: #8B5CF6;
+  --track-kb-muted: #6D28D9;
+
+  --node-state-planning: #3B82F6;
+  --node-state-retrieving: #F59E0B;
+  --node-state-completed: #10B981;
+  --node-state-error: #EF4444;
+
+  --conflict-bg: #FF84001F;
+  --conflict-border: #FF8400;
+
+  --citation-badge: #1E40AF;
+
+  /* ---------- Space ---------- */
+  --space-0: 0px;
+  --space-0_5: 2px;
+  --space-1: 4px;
+  --space-1_5: 6px;
+  --space-2: 8px;
+  --space-2_5: 10px;
+  --space-3: 12px;
+  --space-3_5: 14px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ---------- Radius (lumen-prefixed, re-exposed via tailwind-theme.css) ---------- */
+  --lumen-radius-xs: 2px;
+  --lumen-radius-sm: 4px;
+  --lumen-radius-md: 8px;
+  --lumen-radius-lg: 24px;
+  --lumen-radius-xl: 32px;
+  --lumen-radius-full: 9999px;
+
+  /* ---------- Font size ---------- */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 32px;
+  --font-size-4xl: 40px;
+
+  /* ---------- Line height ---------- */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+
+  /* ---------- Font family (lumen-prefixed, re-exposed via tailwind-theme.css) ---------- */
+  --lumen-font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --lumen-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* ---------- Motion ---------- */
+  --duration-fast: 150ms;
+  --duration-base: 240ms;
+  --duration-slow: 360ms;
+  --easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---------- Shadow (lumen-prefixed, re-exposed via tailwind-theme.css) ---------- */
+  --lumen-shadow-sm: 0px 1px 2px 0px var(--lumen-shadow-color);
+  --lumen-shadow-md: 0px 4px 12px 0px var(--lumen-shadow-color);
+  --lumen-shadow-lg: 0px 12px 32px 0px var(--lumen-shadow-color);
+
+  /* ---------- Z-index ---------- */
+  --z-base: 0;
+  --z-drawer: 40;
+  --z-modal: 50;
+  --z-tooltip: 60;
+}
+
+/* ---------- Light theme overrides ---------- */
+[data-theme="light"] {
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-elevated: #F4F4F5;
+  --border: #E4E4E7;
+  --border-subtle: #F4F4F5;
+  --fg: #18181B;
+  --fg-muted: #52525B;
+  --fg-subtle: #A1A1AA;
+  --ring: #18181B;
+
+  --track-web-fg: #0369A1;
+  --track-kb-fg: #6D28D9;
+  --conflict-fg: #C2570A;
+  --citation-highlight: #FEF3C7;
+  --lumen-shadow-color: #0000001F;
+}

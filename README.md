@@ -16,7 +16,7 @@ lumen/
 ├── docs/
 │   ├── product/         # 产品定义
 │   ├── architecture/    # ADR
-│   ├── designs/         # Pencil 设计产物（Design Workflow L2）
+│   ├── designs/         # Pencil 设计产物（Design Workflow L2）— 已完成 lumen feature（intent / tokens / components / screenshots）
 │   └── kb_docs/         # 模拟内部知识库源文档（注入 ChromaDB）
 └── .claude/             # 项目 skill / agent / rule 配置
 ```
@@ -76,4 +76,5 @@ uv run uvicorn main:app --reload --workers 1 --port 8000
 - 基线架构 ADR：[`docs/architecture/adr/0001-lumen-baseline-architecture.md`](docs/architecture/adr/0001-lumen-baseline-architecture.md)
 - ADR 索引：[`docs/architecture/ADR-INDEX.md`](docs/architecture/ADR-INDEX.md)
 - Feature Catalog：[`docs/FEATURE-CATALOG.md`](docs/FEATURE-CATALOG.md)
+- Component Catalog：[`docs/COMPONENT-CATALOG.md`](docs/COMPONENT-CATALOG.md)
 - 项目规则与工作流：[`CLAUDE.md`](CLAUDE.md) + [`.claude/rules/`](.claude/rules/)

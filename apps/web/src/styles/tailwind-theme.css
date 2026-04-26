@@ -1,0 +1,135 @@
+/**
+ * Lumen Design Tokens — Tailwind v4 `@theme` Layer
+ *
+ * Source: tokens.w3c.json (DTCG spec, SSOT)
+ * Depends on: tokens.css (raw CSS custom properties; themed where applicable)
+ *
+ * Tailwind v4 is CSS-first. This file is the canonical integration point —
+ * it exposes lumen tokens under the Tailwind v4 theme namespace so that
+ * utility classes (`bg-surface`, `rounded-lg`, `shadow-md`, `font-sans`, …)
+ * resolve correctly.
+ *
+ * Naming resolution (NI-1 fix):
+ *   - Tailwind-namespace names on the LHS (`--radius-lg`, `--shadow-md`, `--font-sans`, …)
+ *   - Lumen source names on the RHS (`var(--lumen-radius-lg)`, `var(--lumen-shadow-md)`, …)
+ *   - No self-referential bindings anywhere in this file.
+ *
+ * Usage (apps/web/src/app/globals.css):
+ *   @import "tailwindcss";
+ *   @import "tw-animate-css";
+ *   @import "shadcn/tailwind.css";
+ *   @import "@/designs/tokens/tokens.css";
+ *   @import "@/designs/tokens/tailwind-theme.css";
+ *
+ * Dark mode strategy: CSS attribute-based (`[data-theme]`). Do NOT combine with
+ * the shadcn `.dark` class variant — pick one strategy per app. See
+ * layout-report.md V2-5 handoff note §2 for the unification recommendation.
+ */
+
+@theme inline {
+  /* ---------- Colors ---------- */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-hover: var(--primary-hover);
+
+  --color-track-web: var(--track-web-fg);
+  --color-track-web-fg: var(--track-web-fg);
+  --color-track-web-bg: var(--track-web-bg);
+  --color-track-web-border: var(--track-web-border);
+  --color-track-web-muted: var(--track-web-muted);
+
+  --color-track-kb: var(--track-kb-fg);
+  --color-track-kb-fg: var(--track-kb-fg);
+  --color-track-kb-bg: var(--track-kb-bg);
+  --color-track-kb-border: var(--track-kb-border);
+  --color-track-kb-muted: var(--track-kb-muted);
+
+  --color-node-state-planning: var(--node-state-planning);
+  --color-node-state-retrieving: var(--node-state-retrieving);
+  --color-node-state-completed: var(--node-state-completed);
+  --color-node-state-error: var(--node-state-error);
+
+  --color-conflict: var(--conflict-fg);
+  --color-conflict-fg: var(--conflict-fg);
+  --color-conflict-bg: var(--conflict-bg);
+  --color-conflict-border: var(--conflict-border);
+
+  --color-citation-badge: var(--citation-badge);
+  --color-citation-highlight: var(--citation-highlight);
+
+  --color-shadow: var(--lumen-shadow-color);
+
+  /* ---------- Spacing ---------- */
+  --spacing-0: var(--space-0);
+  --spacing-0_5: var(--space-0_5);
+  --spacing-1: var(--space-1);
+  --spacing-1_5: var(--space-1_5);
+  --spacing-2: var(--space-2);
+  --spacing-2_5: var(--space-2_5);
+  --spacing-3: var(--space-3);
+  --spacing-3_5: var(--space-3_5);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+  --spacing-20: var(--space-20);
+
+  /* ---------- Radius ---------- */
+  --radius-xs: var(--lumen-radius-xs);
+  --radius-sm: var(--lumen-radius-sm);
+  --radius-md: var(--lumen-radius-md);
+  --radius-lg: var(--lumen-radius-lg);
+  --radius-xl: var(--lumen-radius-xl);
+  --radius-full: var(--lumen-radius-full);
+
+  /* ---------- Font size ---------- */
+  --text-xs: var(--font-size-xs);
+  --text-sm: var(--font-size-sm);
+  --text-base: var(--font-size-base);
+  --text-md: var(--font-size-md);
+  --text-lg: var(--font-size-lg);
+  --text-xl: var(--font-size-xl);
+  --text-2xl: var(--font-size-2xl);
+  --text-3xl: var(--font-size-3xl);
+  --text-4xl: var(--font-size-4xl);
+
+  /* ---------- Line height ---------- */
+  --leading-tight: var(--line-height-tight);
+  --leading-normal: var(--line-height-normal);
+  --leading-loose: var(--line-height-loose);
+
+  /* ---------- Font family ---------- */
+  --font-sans: var(--lumen-font-sans);
+  --font-mono: var(--lumen-font-mono);
+
+  /* ---------- Motion ---------- */
+  --animate-duration-fast: var(--duration-fast);
+  --animate-duration-base: var(--duration-base);
+  --animate-duration-slow: var(--duration-slow);
+  --ease-out-lumen: var(--easing-out);
+  --ease-in-out-lumen: var(--easing-in-out);
+
+  /* ---------- Shadow ---------- */
+  --shadow-sm: var(--lumen-shadow-sm);
+  --shadow-md: var(--lumen-shadow-md);
+  --shadow-lg: var(--lumen-shadow-lg);
+
+  /* ---------- Z-index ---------- */
+  --z-index-base: var(--z-base);
+  --z-index-drawer: var(--z-drawer);
+  --z-index-modal: var(--z-modal);
+  --z-index-tooltip: var(--z-tooltip);
+}
