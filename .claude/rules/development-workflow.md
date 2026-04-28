@@ -29,6 +29,7 @@
 3. **TDD** → tdd-guide agent → RED→GREEN→IMPROVE → 覆盖率 80%+
    - UI 实现不得绕过设计 token：禁止硬编码颜色、圆角、阴影、字体等视觉值，禁止使用 arbitrary Tailwind 作为常规方案
    - UI 实现必须保持组件契约和 DESIGN.md（如存在）一致；发现缺失 token 或契约缺口时回到设计产物补齐
+   - UI a11y checklist（每个交互元素逐项过）：装饰性图标必须 `aria-hidden="true"`；交互按钮必须有可访问名（文本子节点或 `aria-label`）；切换/选中态必须用 `aria-pressed` / `aria-selected` / `aria-checked` 等正确属性；表单输入必须有关联 `<label>`（可视或 `sr-only`）
 4. **质量门控** → code-quality-gate skill → 格式化 + lint + 类型检查
 5. **代码审查** → code-reviewer agent（Python 项目加 python-reviewer agent；TS 项目加 typescript-reviewer agent；安全相关加 security-reviewer agent）
    - UI 任务审查必须检查 semantic token 使用、组件契约一致性、DESIGN.md 约束继承、Playwright 视觉回归和 axe 可访问性验证

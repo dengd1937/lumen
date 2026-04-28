@@ -173,6 +173,11 @@ model: haiku
 - Keyboard navigation: [键盘交互]
 - Focus management: [焦点管理]
 - Screen reader: [屏幕阅读器行为]
+- Icon semantics: 列出组件内所有 SVG/图标，逐个标记角色（装饰 → `aria-hidden="true"`；语义 → 提供 `aria-label` 或 `<title>`）
+
+| Icon | Role | Required attribute |
+|------|------|--------------------|
+| [icon name] | decorative / semantic | aria-hidden / aria-label="..." |
 
 ## Implementation Mapping
 - Base component: [基础组件来源]
