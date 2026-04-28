@@ -1,6 +1,6 @@
 # Component Catalog
 
-**Last Updated:** 2026-04-26
+**Last Updated:** 2026-04-28
 
 ## 领域特异组件（新建）
 
@@ -13,7 +13,7 @@
 | `CitationPanel` | lumen | shadcn/ui Sheet | P3 右侧滑入浮窗，原文高亮 360px | [components/citation-panel.md](designs/lumen/components/citation-panel.md) | Design Done |
 | `ConflictBlock` | lumen | 自绘 + Tailwind | 报告正文内联冲突标注，双列对比 | [components/conflict-block.md](designs/lumen/components/conflict-block.md) | Design Done |
 | `KbDocumentList` | lumen | 自绘列表 + Lucide icons | P3 左栏 KB 文档清单 + 章节高亮联动 | [components/kb-document-list.md](designs/lumen/components/kb-document-list.md) | Design Done |
-| `ResearchInputHero` | lumen | lunaris 组合 | P1 主区：大标题 + 大输入框 + KB 卡 + 启动按钮 | [components/research-input-hero.md](designs/lumen/components/research-input-hero.md) | Design Done |
+| `ResearchInputHero` | lumen | shadcn/ui Textarea + Badge + Button | P1 主区：标题 + 副标题 + 双轨数据源切换(Web/KB) + 主题输入 + 启动按钮 | [components/research-input-hero.md](designs/lumen/components/research-input-hero.md) | Active |
 
 ## lunaris 直接复用（无需新建）
 
@@ -42,6 +42,8 @@
 | `Button` | lumen | shadcn/ui Button | S1 Token Integration（2026-04-26 前已存在） | Active |
 | `Input` | lumen | shadcn/ui Input | S1 Token Integration（2026-04-26） | Active |
 | `Card` | lumen | shadcn/ui Card | S1 Token Integration（2026-04-26） | Active |
+| `Textarea` | lumen | shadcn/ui Textarea | S2 P1 Research Input（2026-04-28） | Active |
+| `Badge` | lumen | shadcn/ui Badge | S2 P1 Research Input（2026-04-28） | Active |
 
 > 上述组件通过 `globals.css` 的 shadcn 兼容别名层接入 Lumen token，别名映射：`--background`、`--card`、`--muted`、`--accent`、`--secondary`、`--input`（N3 差异化：muted→surface，accent/secondary→surface-elevated）。
 
