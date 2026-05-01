@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* React Flow base styles — must come AFTER shadcn but BEFORE lumen tokens
+   so lumen --bg/--fg/--border等 tokens can override RF defaults in cascade */
+@import "@xyflow/react/dist/style.css";
 /* Lumen tokens — must come AFTER shadcn so lumen :root values win in cascade */
 @import "../styles/tokens.css";
 @import "../styles/tailwind-theme.css";

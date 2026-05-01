@@ -40,10 +40,12 @@
   --track-web-bg: #0EA5E91A;
   --track-web-border: #0EA5E9;
   --track-web-muted: #0369A1;
+  --track-web-glow: #0EA5E966;
 
   --track-kb-bg: #8B5CF61A;
   --track-kb-border: #8B5CF6;
   --track-kb-muted: #6D28D9;
+  --track-kb-glow: #8B5CF666;
 
   --node-state-planning: #3B82F6;
   --node-state-retrieving: #F59E0B;
@@ -52,6 +54,7 @@
 
   --conflict-bg: #FF84001F;
   --conflict-border: #FF8400;
+  --conflict-glow: #FF840055;
 
   --citation-badge: #1E40AF;
 
