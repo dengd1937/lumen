@@ -169,7 +169,6 @@ model: haiku
 | [breakpoint] | [布局描述] |
 
 ## Accessibility
-- ARIA role: [角色]
 - Keyboard navigation: [键盘交互]
 - Focus management: [焦点管理]
 - Screen reader: [屏幕阅读器行为]
@@ -178,6 +177,15 @@ model: haiku
 | Icon | Role | Required attribute |
 |------|------|--------------------|
 | [icon name] | decorative / semantic | aria-hidden / aria-label="..." |
+
+### ARIA role × milestone 矩阵（必填）
+
+按 milestone 分别声明 role 与 live region 语义。静态初版与动态接入后的 role 可能不同，必须显式区分；禁止在静态实现中借用未来动态语义（e.g. 静态卡片不得声明 `role="status"` 仅因为「以后会有 SSE 推送」）。
+
+| Milestone | role | aria-live | 其他 aria-* | 说明 |
+|-----------|------|-----------|-------------|------|
+| [e.g. S2 P2 mock] | group / button / ... | — | — | 当前实现状态（静态/无运行时变化） |
+| [e.g. v3 SSE 接入] | status / alert / ... | polite / assertive | aria-pressed / aria-selected / ... | 引入实时事件后的语义 |
 
 ## Implementation Mapping
 - Base component: [基础组件来源]

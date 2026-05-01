@@ -29,10 +29,17 @@
 3. **TDD** → tdd-guide agent → RED→GREEN→IMPROVE → 覆盖率 80%+
    - UI 实现不得绕过设计 token：禁止硬编码颜色、圆角、阴影、字体等视觉值，禁止使用 arbitrary Tailwind 作为常规方案
    - UI 实现必须保持组件契约和 DESIGN.md（如存在）一致；发现缺失 token 或契约缺口时回到设计产物补齐
-   - UI a11y checklist（每个交互元素逐项过）：装饰性图标必须 `aria-hidden="true"`；交互按钮必须有可访问名（文本子节点或 `aria-label`）；切换/选中态必须用 `aria-pressed` / `aria-selected` / `aria-checked` 等正确属性；表单输入必须有关联 `<label>`（可视或 `sr-only`）
+   - UI a11y checklist（每个交互元素逐项过）：
+     - 装饰性图标必须 `aria-hidden="true"`；交互按钮必须有可访问名（文本子节点或 `aria-label`）
+     - 切换/选中态必须用 `aria-pressed` / `aria-selected` / `aria-checked` 等正确属性；表单输入必须有关联 `<label>`（可视或 `sr-only`）
+     - **ARIA role 严格匹配组件契约当前 milestone 的声明**，不得借用未来 milestone 的语义（e.g. 静态拓扑下不得声明 `role="status"` / `aria-live`，因为没有运行时 textContent 变化）；如发现契约缺标 milestone，回到 design-workflow 补齐 contract，禁止在实现层临场判断
 4. **质量门控** → code-quality-gate skill → 格式化 + lint + 类型检查
-5. **代码审查** → code-reviewer agent（Python 项目加 python-reviewer agent；TS 项目加 typescript-reviewer agent；安全相关加 security-reviewer agent）
-   - UI 任务审查必须检查 semantic token 使用、组件契约一致性、DESIGN.md 约束继承、Playwright 视觉回归和 axe 可访问性验证
+5. **代码审查** → 按改动文件类型并行触发以下 reviewer，独立判断、不互斥：
+   - **任何 `src/` 改动** → code-reviewer agent（必触发）
+   - **`.ts` / `.tsx` 改动** → typescript-reviewer agent（必触发）
+   - **`.py` 改动** → python-reviewer agent（必触发）
+   - **auth / 用户输入 / 支付 / 加密相关** → security-reviewer agent（必触发）
+   - UI 任务审查必须额外检查 semantic token 使用、组件契约一致性、DESIGN.md 约束继承、Playwright 视觉回归和 axe 可访问性验证
 
 不允许跨任务合并审查。不允许"实现所有文件后统一审查"。
 

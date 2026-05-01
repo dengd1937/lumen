@@ -37,4 +37,14 @@
 - **警告**：仅有 HIGH 问题（谨慎合并）
 - **阻塞**：发现 CRITICAL 问题
 
+## Approve-with-comments 处理政策
+
+reviewer 给 APPROVE 但留有 MEDIUM/LOW finding 时：
+
+- **默认路径**：就地修复后再 commit；同一 PR 内消化，不拖到下次任务
+- **延后路径**：仅在以下两种场景允许，且必须显式记录：
+  - finding 涉及跨任务范围（e.g. 全局重构、依赖升级）→ 在 commit message 中注明「defer to <task-id>」并 `/schedule` 跟踪
+  - finding 涉及未实现的下游依赖（e.g. SSE 接入后才能验证）→ 在对应组件契约或 commit message 中标注 milestone
+- **禁止悄悄放过**：APPROVE 不等于 finding 消失。任何 finding 必须有「就地修 / 延后跟踪 / 用户明确豁免」三种归宿之一
+
 → code-quality-gate skill / security-reviewer agent
