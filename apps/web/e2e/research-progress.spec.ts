@@ -500,10 +500,10 @@ test.describe('S2 P2 — T6 ConflictNode', () => {
     expect(height).toBe(48);
   });
 
-  test('T6-12: conflict inner div role="alert"|"status" 且 aria-label 含冲突概述', async ({ page }) => {
+  test('T6-12: conflict inner div role="group" 且 aria-label 含冲突概述', async ({ page }) => {
     const inner = page.locator('[data-testid="node-inner-conflict-c01"]');
     const role = await inner.getAttribute('role');
-    expect(['alert', 'status']).toContain(role);
+    expect(role).toBe('group');
     const label = await inner.getAttribute('aria-label');
     expect(label).toContain('公开 Web 与私有 KB 在落地路径上结论不一致');
   });

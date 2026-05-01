@@ -4,6 +4,7 @@ import {
   type Edge as RFEdge,
   type EdgeProps,
 } from "@xyflow/react";
+import type { CSSProperties } from "react";
 
 import type { EdgeVariant } from "@/types/research";
 
@@ -38,7 +39,7 @@ export function DualTrackEdge({
     targetPosition,
   });
 
-  const style: React.CSSProperties = {
+  const style: CSSProperties = {
     stroke: VARIANT_STROKE[variant],
     strokeWidth: 1.5,
     fill: "none",

@@ -181,59 +181,62 @@ export const MOCK_TASKS: ReadonlyArray<TaskRecord> = [
   },
 ];
 
-// Dev-only data contract self-checks. `console.assert` is a no-op (only logs)
-// in production builds; failures surface as console errors during E2E.
-const NODE_IDS = new Set(MOCK_NODES.map((n) => n.id));
+// Dev-only data contract self-checks. Skipped in production to avoid SSR log
+// noise from `console.assert` (which writes to stderr on failure even when
+// the assertion is the only side effect).
+if (process.env.NODE_ENV !== "production") {
+  const NODE_IDS = new Set(MOCK_NODES.map((n) => n.id));
 
-console.assert(
-  MOCK_NODES.length >= 3,
-  "C1-1: MOCK_NODES must have >= 3 entries",
-);
-console.assert(
-  MOCK_NODES.some((n) => n.type === "researchNode" && n.data.track === "web"),
-  "C1-2: at least one web-track researchNode required",
-);
-console.assert(
-  MOCK_NODES.some((n) => n.type === "researchNode" && n.data.track === "kb"),
-  "C1-3: at least one kb-track researchNode required",
-);
-console.assert(
-  MOCK_NODES.some((n) => n.type === "conflictNode"),
-  "C1-4: at least one conflictNode required",
-);
-console.assert(
-  MOCK_EDGES.some((e) => e.data.variant === "web"),
-  "C1-5: at least one edge with variant=web required",
-);
-console.assert(
-  MOCK_EDGES.some((e) => e.data.variant === "kb"),
-  "C1-6: at least one edge with variant=kb required",
-);
-console.assert(
-  MOCK_TASKS.length >= 5 && MOCK_TASKS.length <= 7,
-  "C1-7: MOCK_TASKS length must be in [5, 7]",
-);
-console.assert(
-  MOCK_TASKS.some((t) => t.state === "planning"),
-  "C1-8a: at least one planning task required",
-);
-console.assert(
-  MOCK_TASKS.some((t) => t.state === "retrieving"),
-  "C1-8b: at least one retrieving task required",
-);
-console.assert(
-  MOCK_TASKS.some((t) => t.state === "completed"),
-  "C1-8c: at least one completed task required",
-);
-console.assert(
-  MOCK_NODES.every(
-    (n) => typeof n.data.title === "string" && n.data.title.length > 0,
-  ),
-  "C1-9: every node must have non-empty data.title",
-);
-console.assert(
-  MOCK_EDGES.every(
-    (e) => NODE_IDS.has(e.source) && NODE_IDS.has(e.target),
-  ),
-  "C1-10: every edge source/target must reference an existing node id",
-);
+  console.assert(
+    MOCK_NODES.length >= 3,
+    "C1-1: MOCK_NODES must have >= 3 entries",
+  );
+  console.assert(
+    MOCK_NODES.some((n) => n.type === "researchNode" && n.data.track === "web"),
+    "C1-2: at least one web-track researchNode required",
+  );
+  console.assert(
+    MOCK_NODES.some((n) => n.type === "researchNode" && n.data.track === "kb"),
+    "C1-3: at least one kb-track researchNode required",
+  );
+  console.assert(
+    MOCK_NODES.some((n) => n.type === "conflictNode"),
+    "C1-4: at least one conflictNode required",
+  );
+  console.assert(
+    MOCK_EDGES.some((e) => e.data.variant === "web"),
+    "C1-5: at least one edge with variant=web required",
+  );
+  console.assert(
+    MOCK_EDGES.some((e) => e.data.variant === "kb"),
+    "C1-6: at least one edge with variant=kb required",
+  );
+  console.assert(
+    MOCK_TASKS.length >= 5 && MOCK_TASKS.length <= 7,
+    "C1-7: MOCK_TASKS length must be in [5, 7]",
+  );
+  console.assert(
+    MOCK_TASKS.some((t) => t.state === "planning"),
+    "C1-8a: at least one planning task required",
+  );
+  console.assert(
+    MOCK_TASKS.some((t) => t.state === "retrieving"),
+    "C1-8b: at least one retrieving task required",
+  );
+  console.assert(
+    MOCK_TASKS.some((t) => t.state === "completed"),
+    "C1-8c: at least one completed task required",
+  );
+  console.assert(
+    MOCK_NODES.every(
+      (n) => typeof n.data.title === "string" && n.data.title.length > 0,
+    ),
+    "C1-9: every node must have non-empty data.title",
+  );
+  console.assert(
+    MOCK_EDGES.every(
+      (e) => NODE_IDS.has(e.source) && NODE_IDS.has(e.target),
+    ),
+    "C1-10: every edge source/target must reference an existing node id",
+  );
+}

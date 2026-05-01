@@ -34,7 +34,7 @@ export function ConflictNodeCard({ id, data }: ConflictNodeCardProps) {
       <Handle type="target" position={Position.Left} />
       <div
         data-testid={`node-inner-${id}`}
-        role="status"
+        role="group"
         aria-label={ariaLabel}
         className={cn(
           "h-12 py-2.5 px-4 rounded-full border-[1.5px] bg-conflict-bg",
