@@ -49,6 +49,9 @@ apps/api/data/
 !apps/api/data/.gitkeep
 
 # Design workflow (per design-workflow skill)
+# .pen files live in the Pencil editor (like Figma cloud), not in the repo.
+# Persistent design artifacts are screenshots/, tokens/, components/*.md, intent.md, review-verdict.md.
+*.pen
 docs/designs/**/screenshots/.tmp/
 
 # Test artifacts
