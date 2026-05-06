@@ -748,6 +748,13 @@ test.describe('S2 P2 — T9 静态拓扑 + 视觉回归 + a11y 终检', () => {
     await expect
       .poll(async () => page.locator('.react-flow__node').count())
       .toBeGreaterThanOrEqual(5);
+    // React Flow edges 依赖节点 measurement 完成后才渲染，节点 ready ≠ edges ready。
+    // 单独运行 T9-2（无前序 T7 spec warm React Flow 状态）需显式 poll edges，否则
+    // fresh dev server 单跑时 edge count = 0 偶发 fail。
+    // 同款模式 cf. T7 beforeEach L530-533。
+    await expect
+      .poll(async () => page.locator('.react-flow path.react-flow__edge-path').count())
+      .toBeGreaterThanOrEqual(4);
   });
 
   test('T9-1: .react-flow__node 数量 >= 5', async ({ page }) => {
