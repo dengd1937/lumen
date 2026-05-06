@@ -32,11 +32,18 @@ date: 2026-04-20
 
 ## Accessibility
 
-- `role="button"` + `aria-label="引用 {n}，来源 {source title}"`
+- `<button type="button">` 元素（native button 角色，不显式 `role` attribute；详见下方矩阵）+ `aria-label="引用 {n}，来源 {source title}"`
 - 键盘 Enter / Space 触发点击（打开 CitationPanel）
 - `aria-expanded` 标记对应 CitationPanel 是否已打开
 - 双重编码：轨道色背景 + 文本数字 [n]，保证色觉障碍用户可识别
 - 英文/数字字号豁免中文 ≥14px 规则（角标 12px 为设计规格）
+
+## ARIA × Milestone 矩阵
+
+| Milestone | 元素 | role 来源 | aria-* | 说明 |
+|---|---|---|---|---|
+| S2 P3 mock（当前） | `<button type="button">` | native button（隐式 button 角色，不显式 attribute） | `aria-label="引用 {n}，来源 {source title}"`、`aria-expanded={isOpen}` | CitationPanel 由 ReportMarkdownCanvas controlled state 决定开合；数据来自 `report-mock.ts` 静态 mock；isOpen + onToggle 始终成对传入（fully controlled） |
+| v3 SSE live | `<button type="button">`（不变） | native button（不变） | `aria-label`（不变）、`aria-expanded`（不变） | 数据源切换为 SSE 流式 citation；ARIA 语义不变；`aria-expanded` 仍反映 CitationPanel 开合，与 hover 触发的 Tooltip 解耦 |
 
 ## Implementation Mapping
 

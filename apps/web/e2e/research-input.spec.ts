@@ -37,11 +37,17 @@ test.describe('S2 P1 — T1 ResearchInputHero 组件契约', () => {
     page,
   }) => {
     await page.focus('#research-topic');
-    const boxShadow = await page.$eval(
-      '[data-testid="input-card"]',
-      (el) => getComputedStyle(el).boxShadow,
-    );
-    expect(boxShadow).toMatch(/228,\s*228,\s*231/);
+    // input-card 使用 transition-shadow，需要等过渡完成后再读 boxShadow，避免读到中段插值。
+    await expect
+      .poll(
+        () =>
+          page.$eval(
+            '[data-testid="input-card"]',
+            (el) => getComputedStyle(el).boxShadow,
+          ),
+        { timeout: 2000 },
+      )
+      .toMatch(/rgb\(\s*228,\s*228,\s*231\s*\)/);
   });
 
   test('T1-7: submit click 后 icon-spinner visible', async ({ page }) => {

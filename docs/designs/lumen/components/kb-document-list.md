@@ -38,6 +38,13 @@ date: 2026-04-20
 - 分组标题（"公开 Web" / "内部 KB"）：`<h3>` heading，提供语义分组
 - Filter Tabs：`role="tablist"`；每个 tab `role="tab"`，配合 `aria-selected` 标记当前激活筛选
 
+## ARIA × Milestone 矩阵
+
+| Milestone | 元素 | role | aria-* | 说明 |
+|---|---|---|---|---|
+| S2 P3 mock（当前） | 列表容器 `<div>`；每项 `<div>`；filter `<div>` + 三 `<button>` | 列表容器 `role="list"`；每项 `role="listitem"`；filter `role="tablist"`；tab `role="tab"` | tab 含 `aria-selected={activeTab === t}` + `aria-controls="kb-document-tabpanel"` + `id="tab-{t}-trigger"`；列表外层 `role="tabpanel"` + `aria-labelledby` 关联当前 tab；filter tablist 含 `aria-label="按轨道筛选证据来源"` | listitem `tabIndex={0}` + `onKeyDown` ArrowUp/Down 键盘导航；jsx-a11y/no-noninteractive-tabindex/no-noninteractive-element-interactions 行内 disable，理由为契约硬约束（焦点激活非动作触发，故保留 listitem 而非改用 menuitem）；**`aria-current` 在 active 联动实装前未渲染**（contract `aria-current="true" when active` 留待 active 联动里程碑） |
+| v3 SSE live | （不变） | （不变） | 新增 `aria-current="true"` on 当前章节引用文档项 | 数据源切换为 SSE，文档列表实时增长；ARIA 语义不变；active 联动按 ReportMarkdownCanvas 当前章节引用 ID 计算并标 `aria-current` |
+
 ## Implementation Mapping
 
 - 自绘列表 + Lucide icons（globe → web-item；database → kb-item）

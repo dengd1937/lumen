@@ -35,6 +35,13 @@ date: 2026-04-20
 - 三重编码保证色盲可辨识：triangle-alert 图标 + 橙色左边框 + 结构化区块形状
 - 键盘：可聚焦（collapsed/expanded 切换按钮）；聚焦时显示标准聚焦环
 
+## ARIA × Milestone 矩阵
+
+| Milestone | 元素 | role | aria-* | 说明 |
+|---|---|---|---|---|
+| S2 P3 mock（当前） | 外层 `<div>` + 内嵌 `<header>` / 双列 `<div>` / footer `<div>` | 外层 `role="region"`；footer `role="note"` | `aria-labelledby="conflict-block-{id}-heading"` 关联 `<h3>` | 用 `<div role="region">` 而非 `<section>`：避免 `<section aria-labelledby>` 隐式 region 与显式 role 触发 `jsx-a11y/no-redundant-roles`；TriangleAlert + Lightbulb 图标均 `aria-hidden="true"`；当前未实现 collapsed/highlighted 状态 |
+| v3 SSE live | （不变） | （不变） | （不变） | 数据源切换为 SSE 流式 conflict 检测；ARIA 语义不变；如未来引入 collapsed 切换按钮，按钮上加 `aria-expanded` 反映折叠态，highlighted 态由父容器通过 outline 视觉指示，不影响 region/note 语义 |
+
 ## Implementation Mapping
 
 - 自绘组件 + Tailwind，无第三方 UI 底层

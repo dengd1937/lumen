@@ -58,14 +58,16 @@
     "track-web-bg": { "$type": "color", "$value": "#0EA5E91A" },
     "track-web-border": { "$type": "color", "$value": "#0EA5E9" },
     "track-web-muted": { "$type": "color", "$value": "#0369A1" },
+    "track-web-glow": { "$type": "color", "$value": "#0EA5E966" },
     "track-kb-fg": {
       "$type": "color",
-      "$value": "#8B5CF6",
-      "$extensions": { "themed": { "dark": "#8B5CF6", "light": "#6D28D9" } }
+      "$value": "#A78BFA",
+      "$extensions": { "themed": { "dark": "#A78BFA", "light": "#6D28D9" } }
     },
     "track-kb-bg": { "$type": "color", "$value": "#8B5CF61A" },
     "track-kb-border": { "$type": "color", "$value": "#8B5CF6" },
     "track-kb-muted": { "$type": "color", "$value": "#6D28D9" },
+    "track-kb-glow": { "$type": "color", "$value": "#8B5CF666" },
     "node-state-planning": { "$type": "color", "$value": "#3B82F6" },
     "node-state-retrieving": { "$type": "color", "$value": "#F59E0B" },
     "node-state-completed": { "$type": "color", "$value": "#10B981" },
@@ -77,6 +79,7 @@
     },
     "conflict-bg": { "$type": "color", "$value": "#FF84001F" },
     "conflict-border": { "$type": "color", "$value": "#FF8400" },
+    "conflict-glow": { "$type": "color", "$value": "#FF840055" },
     "citation-badge": { "$type": "color", "$value": "#1E40AF" },
     "citation-highlight": {
       "$type": "color",

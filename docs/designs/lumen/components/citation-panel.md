@@ -38,6 +38,13 @@ date: 2026-04-20
 - 关闭按钮 `aria-label="关闭引用浮窗"`
 - backdrop 不加暗化，保持报告正文可读性
 
+## ARIA × Milestone 矩阵
+
+| Milestone | 元素 | role | aria-* | 说明 |
+|---|---|---|---|---|
+| S2 P3 mock（当前） | base-ui `Dialog.Popup`（`<div>`） | `role="dialog"` + 显式 `aria-modal="false"` | `aria-labelledby="citation-panel-title"` 关联 SheetTitle；close button `aria-label="关闭引用浮窗"` | Sheet `modal={false}`：page 主内容仍可滚动且可交互；`SheetContent overlay={false}` 不渲染 backdrop（解决 T0 deferred bg-black/10）；focus return 通过 `onOpenChangeComplete(false)` 触发（动画完成后稳定时机） |
+| v3 SSE live | （不变） | （不变） | （不变） | 数据源切换为 SSE 推送的 citation snippet；ARIA 语义不变；focus return 与 ESC/close-btn/outside-click 三路径仍统一经 `onOpenChange(false) → onClose()` |
+
 ## Implementation Mapping
 
 - 基础组件：shadcn `Sheet`（side="right"）作底层抽屉
