@@ -21,7 +21,7 @@ lumen/
 └── .claude/             # 项目 skill / agent / rule 配置
 ```
 
-详细架构决策见 [`docs/architecture/adr/0001-lumen-baseline-architecture.md`](docs/architecture/adr/0001-lumen-baseline-architecture.md)。
+详细架构决策见 [ADR-INDEX](docs/architecture/ADR-INDEX.md)（当前：[ADR-0001 基线架构](docs/architecture/adr/0001-lumen-baseline-architecture.md)、[ADR-0002 SSE 协议、Mock 桥接、Demo 部署](docs/architecture/adr/0002-sse-protocol-and-demo-deployment.md)）。
 
 ---
 
