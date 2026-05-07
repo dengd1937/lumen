@@ -16,9 +16,7 @@ from app.core.deps import get_settings
 
 
 @pytest.fixture
-def env_settings(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> Iterator[Path]:
+def env_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[Path]:
     """Set required env vars to test-only values, isolate Settings cache.
 
     Yields the temp DB path so tests can introspect the file directly

@@ -90,8 +90,7 @@ def test_lifespan_runs_init_db(env_settings: Path) -> None:
     conn = sqlite3.connect(str(env_settings))
     try:
         cursor = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' "
-            "AND name LIKE 'lumen_%'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lumen_%'"
         )
         tables = {row[0] for row in cursor.fetchall()}
     finally:

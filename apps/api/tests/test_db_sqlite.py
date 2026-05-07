@@ -113,9 +113,7 @@ async def test_insert_and_read_audit_log(conn: aiosqlite.Connection) -> None:
 
 
 async def test_event_id_unique_constraint(conn: aiosqlite.Connection) -> None:
-    await insert_audit_log(
-        conn, event_id="dup", session_id="s1", event_type="error", payload="{}"
-    )
+    await insert_audit_log(conn, event_id="dup", session_id="s1", event_type="error", payload="{}")
     with pytest.raises(sqlite3.IntegrityError):
         await insert_audit_log(
             conn, event_id="dup", session_id="s1", event_type="error", payload="{}"

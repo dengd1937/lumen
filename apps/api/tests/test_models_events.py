@@ -159,12 +159,8 @@ def test_all_9_event_types_instantiate() -> None:
         type="report_chunk",
         content="c",
     )
-    d = DoneEvent(
-        event_id=eid, session_id=sid, timestamp=ts, type="done", report_id="r1"
-    )
-    e = ErrorEvent(
-        event_id=eid, session_id=sid, timestamp=ts, type="error", message="m"
-    )
+    d = DoneEvent(event_id=eid, session_id=sid, timestamp=ts, type="done", report_id="r1")
+    e = ErrorEvent(event_id=eid, session_id=sid, timestamp=ts, type="error", message="m")
     hb = HeartbeatEvent(type="heartbeat", server_time="2026-05-07T10:00:30Z")
 
     instances: list[

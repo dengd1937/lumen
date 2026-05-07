@@ -42,7 +42,5 @@ async def get_db() -> AsyncIterator[aiosqlite.Connection]:
 
     See `app/db/sqlite.py:configure_connection` for the contract.
     """
-    raise NotImplementedError(
-        "T9 implements get_db; T7 only exposes the placeholder + contract."
-    )
+    raise NotImplementedError("T9 implements get_db; T7 only exposes the placeholder + contract.")
     yield  # pragma: no cover  (unreachable; satisfies AsyncIterator type)
