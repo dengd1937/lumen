@@ -1,8 +1,64 @@
+import type { BaseEvent } from "@/types/research-events";
 import type {
   ResearchEdge,
   ResearchFlowNode,
   TaskRecord,
 } from "@/types/research";
+
+/**
+ * Mock-channel session identifier. Hook returns this when consumers ask for
+ * the active session id without going through the SSE channel.
+ */
+export const MOCK_SESSION_ID = "mock-session-demo-001";
+
+/**
+ * Permanently fixed sentinel — does NOT track today's date. Chosen at T2
+ * implementation; must not be updated (stability > currency). Mock event_id
+ * must be deterministic across renders, so we don't use Date.now() /
+ * new Date().toISOString() — that would invalidate React memoization on
+ * every render and break Codex M2 stability requirement.
+ */
+const MOCK_EVENT_TIMESTAMP = "2026-05-07T00:00:00.000Z";
+
+/**
+ * Mock BaseEvent triplets per node / task id. Hook layer reads this map at
+ * the wire boundary so consumers see the same shape regardless of source
+ * channel (mock or sse).
+ *
+ * Per ADR-0002 D7.1 + Codex M2: the event_id values here are UI-key
+ * placeholders — they do NOT participate in audit_log persistence, replay
+ * cursors, or reducer idempotency (mock channel bypasses all of those).
+ * They exist purely to give every hook return value a stable, snake_case
+ * BaseEvent shape.
+ */
+function makeMockBaseEvent(stableId: string): BaseEvent {
+  return Object.freeze({
+    event_id: `mock-evt-${stableId}`,
+    session_id: MOCK_SESSION_ID,
+    timestamp: MOCK_EVENT_TIMESTAMP,
+  });
+}
+
+export const MOCK_NODE_TO_EVENT: Readonly<Record<string, BaseEvent>> =
+  Object.freeze({
+    input: makeMockBaseEvent("input"),
+    "web-1": makeMockBaseEvent("web-1"),
+    "web-2": makeMockBaseEvent("web-2"),
+    "kb-1": makeMockBaseEvent("kb-1"),
+    "kb-2": makeMockBaseEvent("kb-2"),
+    "conflict-c01": makeMockBaseEvent("conflict-c01"),
+    merge: makeMockBaseEvent("merge"),
+  });
+
+export const MOCK_TASK_TO_EVENT: Readonly<Record<string, BaseEvent>> =
+  Object.freeze({
+    t1: makeMockBaseEvent("t1"),
+    t2: makeMockBaseEvent("t2"),
+    t3: makeMockBaseEvent("t3"),
+    t4: makeMockBaseEvent("t4"),
+    t5: makeMockBaseEvent("t5"),
+    t6: makeMockBaseEvent("t6"),
+  });
 
 export const MOCK_NODES: ReadonlyArray<ResearchFlowNode> = [
   {
@@ -238,5 +294,22 @@ if (process.env.NODE_ENV !== "production") {
       (e) => NODE_IDS.has(e.source) && NODE_IDS.has(e.target),
     ),
     "C1-10: every edge source/target must reference an existing node id",
+  );
+  console.assert(
+    MOCK_NODES.every((n) => MOCK_NODE_TO_EVENT[n.id] !== undefined),
+    "C1-11: every MOCK_NODES entry must have a MOCK_NODE_TO_EVENT mapping",
+  );
+  console.assert(
+    Object.keys(MOCK_NODE_TO_EVENT).every((k) => NODE_IDS.has(k)),
+    "C1-11b: MOCK_NODE_TO_EVENT must not contain keys absent from MOCK_NODES",
+  );
+  console.assert(
+    MOCK_TASKS.every((t) => MOCK_TASK_TO_EVENT[t.id] !== undefined),
+    "C1-12: every MOCK_TASKS entry must have a MOCK_TASK_TO_EVENT mapping",
+  );
+  const TASK_IDS = new Set(MOCK_TASKS.map((t) => t.id));
+  console.assert(
+    Object.keys(MOCK_TASK_TO_EVENT).every((k) => TASK_IDS.has(k)),
+    "C1-12b: MOCK_TASK_TO_EVENT must not contain keys absent from MOCK_TASKS",
   );
 }
