@@ -8,7 +8,10 @@ env vars.
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from functools import lru_cache
+
+import aiosqlite
 
 from app.core.config import Settings
 
@@ -23,3 +26,23 @@ def get_settings() -> Settings:
     app fails to start, by design.
     """
     return Settings()  # type: ignore[call-arg]
+
+
+async def get_db() -> AsyncIterator[aiosqlite.Connection]:
+    """T9 implements this as the per-request DB connection dependency.
+
+    CONTRACT (per code-reviewer T7 HIGH): every aiosqlite connection
+    opened here MUST call `configure_connection(conn)` before any DML/
+    DDL — `busy_timeout=5000` and `foreign_keys=ON` are PER-CONNECTION
+    pragmas. The lifespan-time connection in main.py only persists the
+    database-level WAL setting; per-request connections inherit WAL but
+    NOT busy_timeout, so concurrent producer + replay tasks risk
+    immediate `database is locked` errors without the explicit configure
+    call.
+
+    See `app/db/sqlite.py:configure_connection` for the contract.
+    """
+    raise NotImplementedError(
+        "T9 implements get_db; T7 only exposes the placeholder + contract."
+    )
+    yield  # pragma: no cover  (unreachable; satisfies AsyncIterator type)
