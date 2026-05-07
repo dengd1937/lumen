@@ -1,0 +1,147 @@
+"""Session lifecycle manager.
+
+Per ADR-0002 D8.4 + Codex H1: enforces the session producer lock
+(one active LangGraph run per session_id at a time) and drives the
+state machine `created → running → completed | failed | cancelled`.
+The state machine has NO back-edge — once terminal, the session_id
+is locked from further `start_session` calls (would otherwise emit
+"ghost events" on T10 replay; see code-reviewer T9 HIGH). A retry
+needs a fresh session_id.
+
+`active_runs` is a process-local dict — fine for single-worker
+deployments (ADR-0001 D5: `uvicorn --workers 1` is a hard constraint).
+A multi-worker rollout would require Redis or DB-backed locking; not
+in M1.0 scope.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import sqlite3
+from functools import partial
+from typing import Literal
+
+import aiosqlite
+
+from app.db.sqlite import (
+    configure_connection,
+    create_session,
+    insert_audit_log,
+    update_session_status,
+)
+from app.services.langgraph_service import LangGraphStub
+
+_TerminalStatus = Literal["completed", "failed", "cancelled"]
+
+
+class SessionAlreadyRunningError(RuntimeError):
+    """Producer lock violation — caller should map to HTTP 409 Conflict.
+
+    Raised both for in-flight collisions and for any attempt to restart
+    a session_id that already exists (regardless of current status).
+    The state machine `created → running → completed | failed | cancelled`
+    has no back-edge per code-reviewer T9 HIGH (avoids T10 replay
+    ghost-event problem). Clients retry with a fresh session_id.
+    """
+
+    def __init__(self, session_id: str) -> None:
+        self.session_id = session_id
+        super().__init__(f"Session {session_id!r} is already running")
+
+
+class SessionManager:
+    """In-memory registry of active LangGraph producer tasks.
+
+    Each `start_session` call:
+      1. Verifies no in-flight task exists for the session_id (else 409).
+      2. Inserts a new lumen_research_sessions row (PK collision → 409).
+      3. Marks status='running' and launches an asyncio.Task wrapping
+         the LangGraph producer + per-event audit_log writes.
+      4. Registers a done_callback that handles active_runs eviction;
+         terminal status updates happen inside `_run`'s finally block
+         via asyncio.shield so they survive cancellation.
+    """
+
+    def __init__(
+        self,
+        *,
+        db_path: str,
+        langgraph: LangGraphStub,
+    ) -> None:
+        self._db_path = db_path
+        self._langgraph = langgraph
+        self.active_runs: dict[str, asyncio.Task[None]] = {}
+
+    async def start_session(self, session_id: str) -> None:
+        if session_id in self.active_runs:
+            raise SessionAlreadyRunningError(session_id)
+
+        async with aiosqlite.connect(self._db_path) as conn:
+            await configure_connection(conn)
+            try:
+                await create_session(conn, session_id=session_id)
+            except sqlite3.IntegrityError as exc:
+                # PK collision: session_id already exists (regardless of
+                # status). State machine has no back-edge — restart with
+                # the same id would emit ghost events on T10 replay.
+                raise SessionAlreadyRunningError(session_id) from exc
+            await update_session_status(conn, session_id=session_id, status="running")
+
+        task = asyncio.create_task(self._run(session_id), name=f"session-{session_id}")
+        self.active_runs[session_id] = task
+        # functools.partial keeps mypy happy with add_done_callback's
+        # `Callable[[Future[Any]], None]` signature (lambda inference fails).
+        task.add_done_callback(partial(self._on_task_done, session_id))
+
+    async def _run(self, session_id: str) -> None:
+        """Producer coroutine: consume LangGraph events, persist each
+        to audit_log. The terminal status is decided here (not in the
+        done_callback) and written via `asyncio.shield` so it survives
+        external cancellation — that way we never leave a dangling
+        cleanup task to be GC'd by the event loop after shutdown."""
+        terminal_status: _TerminalStatus = "completed"
+        try:
+            async for ev in self._langgraph.astream_events(session_id):
+                payload = ev.model_dump_json(exclude_none=True)
+                async with aiosqlite.connect(self._db_path) as conn:
+                    await configure_connection(conn)
+                    await insert_audit_log(
+                        conn,
+                        event_id=ev.event_id,
+                        session_id=session_id,
+                        event_type=ev.type,
+                        payload=payload,
+                    )
+        except asyncio.CancelledError:
+            terminal_status = "cancelled"
+            raise
+        except Exception:
+            terminal_status = "failed"
+            raise
+        finally:
+            # Shield ensures the status row is updated even when the
+            # outer task is being cancelled. Swallow the secondary
+            # CancelledError that shield re-raises here; the original
+            # cancellation already propagated from the try block.
+            try:
+                await asyncio.shield(self._mark_terminal(session_id, terminal_status))
+            except asyncio.CancelledError:
+                pass
+            except Exception:
+                # Best-effort cleanup — if the DB write itself fails
+                # (e.g. lifespan teardown closed the connection), the
+                # row stays at 'running' and the next start_session
+                # call's restart-allowed branch will fix it.
+                pass
+
+    def _on_task_done(self, session_id: str, _task: asyncio.Task[None]) -> None:
+        """Sync done_callback: only handles active_runs eviction.
+        Status updates are owned by `_run`'s finally block (above) so
+        we don't spawn detached async cleanup tasks that could be
+        destroyed mid-flight at lifespan teardown."""
+        self.active_runs.pop(session_id, None)
+
+    async def _mark_terminal(self, session_id: str, status: _TerminalStatus) -> None:
+        async with aiosqlite.connect(self._db_path) as conn:
+            await configure_connection(conn)
+            await update_session_status(conn, session_id=session_id, status=status)
