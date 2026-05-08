@@ -1,12 +1,11 @@
+"use client";
+
 import { Sparkles } from "lucide-react";
 
-interface ResearchProgressTopBarProps {
-  sessionId: string;
-}
+import { useSessionId } from "@/lib/session-id-context";
 
-export function ResearchProgressTopBar({
-  sessionId,
-}: ResearchProgressTopBarProps) {
+export function ResearchProgressTopBar() {
+  const sessionId = useSessionId();
   return (
     <header
       data-testid="p2-topbar"
