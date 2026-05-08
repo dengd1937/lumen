@@ -105,13 +105,15 @@ def test_lifespan_runs_init_db(env_settings: Path) -> None:
 
 
 def test_research_router_mounted_under_api_prefix(env_settings: Path) -> None:
-    """Router skeleton must be wired even before T9 fills in endpoints,
-    so the /api/* CORS rewrite (frontend next.config.ts) lands somewhere
-    instead of bouncing as 404 from the app root.
+    """Router skeleton must be wired so the /api/* CORS rewrite (frontend
+    next.config.ts) lands somewhere instead of bouncing as 404 from the
+    app root.
 
-    Asserts against the placeholder /api/research/status endpoint added
-    in research.py (T7 code-reviewer MEDIUM: an empty router would leave
-    this test trivially green even if include_router were removed)."""
+    T10 replaced the T7 placeholder `/api/research/status` with the real
+    `POST /api/research/start` + `GET /api/research/{session_id}/stream`
+    endpoints. Both must be present on the route table for SSE clients
+    to dispatch correctly. The unknown-session GET also doubles as a
+    runtime check that the route is wired (vs. just registered)."""
     from main import app
 
     routes = {getattr(r, "path", "") for r in app.routes}
@@ -121,10 +123,13 @@ def test_research_router_mounted_under_api_prefix(env_settings: Path) -> None:
         "No /api/* routes registered — include_router(research_router, "
         "prefix='/api') may have been removed from main.py"
     )
-    assert "/api/research/status" in api_routes
+    assert "/api/research/start" in api_routes
+    assert "/api/research/{session_id}/stream" in api_routes
 
-    # And it actually responds (not just registered).
+    # And it actually responds (not just registered): GET on an unknown
+    # session must return 404 from the route handler, not 404 from the
+    # app router (which would surface as no `detail` field).
     with TestClient(app) as client:
-        r = client.get("/api/research/status")
-    assert r.status_code == 200
-    assert r.json()["router"] == "research"
+        r = client.get("/api/research/never-mounted/stream")
+    assert r.status_code == 404
+    assert "session" in r.json().get("detail", "").lower()
