@@ -26,25 +26,35 @@
 
 | Agent | 用途 |
 |-------|------|
-| **code-reviewer** | 通用代码质量、模式、最佳实践 |
-| **security-reviewer** | 安全漏洞、OWASP Top 10 |
-| **python-reviewer** | Python 专项问题 |
-| **typescript-reviewer** | TypeScript/React 类型安全、异步模式、hooks |
+| **task-driven-development skill** | 通用代码质量审查（Step 4 通过 general-purpose + code-quality-reviewer-prompt.md） |
+| **security-reviewer** | 安全漏洞、OWASP Top 10（Step 4 并发触发） |
+| **python-reviewer** | Python 专项问题（Step 4 并发触发） |
+| **typescript-reviewer** | TypeScript/React 类型安全、异步模式、hooks（Step 4 并发触发） |
+| **code-reviewer** | [已废弃] 由 task-driven-development skill 内部 prompt 模板替代 |
 
-## 审批标准
+## 审批标准（人类 PR 审查语境）
 
 - **通过**：无 CRITICAL 或 HIGH 问题
 - **警告**：仅有 HIGH 问题（谨慎合并）
 - **阻塞**：发现 CRITICAL 问题
 
-## Approve-with-comments 处理政策
-
-reviewer 给 APPROVE 但留有 MEDIUM/LOW finding 时：
-
-- **默认路径**：就地修复后再 commit；同一 PR 内消化，不拖到下次任务
-- **延后路径**：仅在以下两种场景允许，且必须显式记录：
-  - finding 涉及跨任务范围（e.g. 全局重构、依赖升级）→ 在 commit message 中注明「defer to <task-id>」并 `/schedule` 跟踪
-  - finding 涉及未实现的下游依赖（e.g. SSE 接入后才能验证）→ 在对应组件契约或 commit message 中标注 milestone
-- **禁止悄悄放过**：APPROVE 不等于 finding 消失。任何 finding 必须有「就地修 / 延后跟踪 / 用户明确豁免」三种归宿之一
+> **注：语境差异。** 上述三态语义用于**人类 PR 审查**。
+> 在 `task-driven-development` skill（AI 自动化流程）内 HIGH 被收紧为 BLOCK，
+> 改为二态（APPROVE / BLOCK），原因是 AI 流程没有人类把关、宁严勿宽。
+> 详见 `.claude/skills/task-driven-development/code-quality-reviewer-prompt.md`。
 
 → code-quality-gate skill / security-reviewer agent
+
+## Red Flags — 跳过审查的合理化借口
+
+| 借口 | 现实 |
+|---|---|
+| "代码看起来挺干净，应该没问题" | 没经过 reviewer agent = 没审查；自我感觉不算 |
+| "我自己审过了，不用再叫 agent" | 自审有确认偏差；reviewer agent 是独立第二意见 |
+| "改动很小，CRITICAL 不可能存在" | 一行改动就能引入 SQL 注入、原型污染、TOCTOU |
+| "改动不涉及安全敏感代码" | auth/输入/支付/外部 API/文件系统 都触发 security-reviewer，自判"敏感"易漏 |
+| "Python/TS 项目用通用 code-reviewer 就够" | 语言专项审查（python-reviewer/typescript-reviewer）必须叠加，不可替代 |
+| "刚刚审过类似改动" | 每个 commit 必须独立审查；上次的审查不覆盖这次 |
+| "review 中 CRITICAL 等会再修" | CRITICAL 阻塞 commit，必须**先**修 |
+| "HIGH 问题先合进去再开 issue" | HIGH 是警告级，需谨慎合并并明确记录原因，不是默认放行 |
+| "reviewer 误报了" | 误报需说明具体理由并由用户确认；不允许模型自行驳回 |

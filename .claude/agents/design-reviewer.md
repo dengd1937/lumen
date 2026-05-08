@@ -1,6 +1,6 @@
 ---
 name: design-reviewer
-description: Design artifact reviewer for V2-4 gate. Reviews design contracts, tokens, intent docs, and layout reports for completeness, structural consistency, and documentation compliance before handoff to development.
+description: 设计产物（contract/token/intent/layout）准备移交开发前使用 — 设计工作流 L2 V2-4 步骤（hard gate）强制触发，通过后才进入 Gate 3 用户审批；对抗式审查找出不应移交的理由，检查完整性、结构一致性、文档合规性。
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---
@@ -208,7 +208,6 @@ whether the design has thought through accessibility, not whether the implemente
 
 Focus:
 - ARIA roles specified for all interactive components
-- ARIA role × milestone matrix present and self-consistent
 - Keyboard navigation documented
 - Focus management described for complex widgets
 - Screen reader considerations documented
@@ -225,23 +224,12 @@ How to check:
 4. For form components:
    - Label association documented? (aria-label, aria-labelledby, or visible <label>)
    - Error state announcements documented?
-5. **ARIA role × milestone matrix audit**:
-   a. Verify the contract contains the "ARIA role × milestone 矩阵" table (template field — see doc-writer component-contract)
-   b. For each milestone row, verify role choice is consistent with the runtime behavior at that milestone:
-      - Static / mock milestone → role should be `group`, `button`, semantic HTML, or omitted; MUST NOT declare `role="status"` / `role="alert"` / `aria-live` (no runtime textContent change)
-      - Dynamic / SSE / WebSocket milestone → live region semantics (`role="status"` + `aria-live="polite"`, or `role="alert"` + `aria-live="assertive"`) are appropriate when the component will receive real-time updates
-   c. Flag any contract that:
-      - Omits the milestone matrix entirely (MEDIUM)
-      - Declares live region semantics for a milestone with no documented runtime change source (HIGH — leads to implementation borrowing future semantics)
-      - Has only one milestone row when intent.md or product brief mentions multi-stage delivery (MEDIUM)
-6. If accessibility-report.md happens to exist (post-impl re-review):
+5. If accessibility-report.md happens to exist (post-impl re-review):
    a. Read it — check for unresolved WCAG 2.1 AA violations
    b. Flag any unresolved violations
 
 Red flags:
 - No Accessibility section in a component contract
-- Missing ARIA role × milestone matrix in a component contract that has multiple delivery milestones
-- Static-milestone row declares `role="status"` / `role="alert"` / `aria-live` without runtime update source
 - Interactive component without keyboard navigation docs
 - Modal/dialog without focus trap description
 - Form inputs without label association documented

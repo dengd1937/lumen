@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Expert code review specialist. Proactively reviews code for quality, security, and maintainability. Use immediately after writing or modifying code. MUST BE USED for all code changes.
+description: "[已废弃 v2.0] 由 task-driven-development skill 内部 Task(general-purpose) + code-quality-reviewer-prompt.md 替代。文件保留作历史向后兼容，新调用请勿使用。"
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---
