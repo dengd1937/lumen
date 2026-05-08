@@ -1,6 +1,28 @@
+"use client";
+
 import { Pause } from "lucide-react";
 
+import { useResearchData } from "@/hooks/use-research-data";
+import type { ResearchFlowNode } from "@/types/research";
+
+const IDLE_LABEL = "等待研究启动";
+
+function getActiveLabel(activeNode: ResearchFlowNode | null): string {
+  // pickActiveNode currently only returns researchNode (mock channel),
+  // but this function is the future-proof seam for T13: when SSE
+  // events surface a conflictNode as active, we render the conflict
+  // copy instead of silently falling through to IDLE_LABEL.
+  if (activeNode === null) return IDLE_LABEL;
+  if (activeNode.type === "researchNode") {
+    return `正在检索 · ${activeNode.data.title}`;
+  }
+  return `冲突检测中 · ${activeNode.data.title}`;
+}
+
 export function BottomActiveBar() {
+  const { activeNode } = useResearchData();
+  const label = getActiveLabel(activeNode);
+
   return (
     <footer
       data-testid="bottom-active-bar"
@@ -10,7 +32,7 @@ export function BottomActiveBar() {
         data-testid="active-node-label"
         className="flex-1 min-w-0 text-fg text-base truncate"
       >
-        正在检索 · 公开 Web · 竞品分析
+        {label}
       </span>
       <span
         data-testid="sse-meta"

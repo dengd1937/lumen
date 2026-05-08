@@ -50,6 +50,47 @@ uv run uvicorn main:app --reload --workers 1 --port 8000
 
 ---
 
+## Demo Runbook (M1.0)
+
+M1.0 SSE skeleton 验证流程。前后端分别启动，通过 curl 直连 SSE 协议端点验证骨架闭环。前端 mock 通道在 P1/P2/P3 渲染层稳定运行；SSE 端到端 happy-path 由 curl + Playwright `e2e/sse-protocol.spec.ts`（T15）覆盖。
+
+```bash
+# 1. 注入秘钥（1Password CLI）
+op inject -i .env.tpl -o apps/api/.env
+
+# 2. 后端
+cd apps/api
+uv sync
+uv run uvicorn main:app --reload --workers 1 --port 8000
+
+# 3. 前端（另一个终端）
+cd apps/web
+pnpm install
+NEXT_PUBLIC_LUMEN_DATA_SOURCE=sse pnpm dev    # 切到 sse 通道访问后端
+
+# 4. 验证 SSE 协议骨架（直连后端，绕过前端）
+curl -X POST http://localhost:8000/api/research/start \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"demo-001"}'
+curl -N http://localhost:8000/api/research/demo-001/stream
+
+# 5. 浏览器访问前端验证 mock 通道渲染
+#    http://localhost:3000/             — P1 输入页
+#    http://localhost:3000/research/demo-001         — P2 进度页
+#    http://localhost:3000/research/demo-001/report  — P3 报告页
+```
+
+> ⚠ **`--workers 1` 是硬约束**（ADR-0001 D5）：单 worker 下 ChromaDB embedded + SQLite 才能避免并发写入争用；M1.0 demo 单用户场景不受影响。
+
+### M1.0 限制
+
+- **P1 输入框不接 API**：M1.0 P1 页面的 "开始研究" 按钮目前是 mock-only，不会触发 `POST /api/research/start`。要验证 SSE 协议端到端，请用上面 step 4 的 `curl` 命令直连后端；M1.A 会把 P1 与后端串起来。
+- **`activeNode` 等派生字段在 SSE 通道仅有占位语义**：M1.0 backend 目前只 emit 4 个事件的固定序列（LangGraphStub），不发送节点位置 / 引用元数据 / 冲突结构化数据。前端在 SSE 模式下用 React Flow auto-layout 兜底，citations 默认为空。这些都是 M1.A backend 真接入后才补全。
+- **三个 hook 各开一个 SSE 连接**：`useResearchData` / `useReportData` / `useKbData` 在 SSE 模式下分别 open 一个 `EventSource`，同时连同一个端点。M1.0 单用户 demo 没问题；M1.A 加 connection-multiplex 层。
+- **Last-Event-ID 续传由浏览器自动填充**：第一次连接后浏览器会在断线重连时自动带上最近收到的 `id:` 行；客户端层面无需手动传递（除非在 `createSseClient` 构造时显式覆盖 `lastEventId`）。
+
+---
+
 ## 技术栈
 
 | 层 | 选型 | 来源 |

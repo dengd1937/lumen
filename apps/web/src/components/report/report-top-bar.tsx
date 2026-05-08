@@ -1,10 +1,11 @@
+"use client";
+
 import { Sparkles } from "lucide-react";
 
-interface ReportTopBarProps {
-  sessionId: string;
-}
+import { useSessionId } from "@/lib/session-id-context";
 
-export function ReportTopBar({ sessionId }: ReportTopBarProps) {
+export function ReportTopBar() {
+  const sessionId = useSessionId();
   return (
     <header
       data-testid="p3-topbar"

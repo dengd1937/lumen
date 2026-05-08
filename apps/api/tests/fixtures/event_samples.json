@@ -1,0 +1,84 @@
+{
+  "_schema_version": "M1.0",
+  "plan_created": {
+    "event_id": "01JV0SMPL0PLANCREATED000001",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:00.000Z",
+    "type": "plan_created",
+    "nodes": [
+      { "id": "n1", "title": "公开 Web 检索", "track": "web" },
+      { "id": "n2", "title": "私有 KB 检索", "track": "kb" }
+    ]
+  },
+  "node_started": {
+    "event_id": "01JV0SMPL0NODESTARTED00002",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:01.000Z",
+    "type": "node_started",
+    "node_id": "n1",
+    "track": "web"
+  },
+  "node_progress": {
+    "event_id": "01JV0SMPL0NODEPROGRESS0003",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:02.000Z",
+    "type": "node_progress",
+    "node_id": "n1",
+    "message": "已检索 5/12 篇"
+  },
+  "node_completed": {
+    "event_id": "01JV0SMPL0NODECOMPLETE0004",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:05.000Z",
+    "type": "node_completed",
+    "node_id": "n1",
+    "sources": [
+      {
+        "id": "src-1",
+        "title": "Gartner 2025 AI Adoption",
+        "url": "https://example.com/gartner-2025",
+        "snippet": "头部企业落地周期 6-9 月",
+        "similarity": 0.91
+      },
+      {
+        "id": "src-2",
+        "title": "McKinsey Generative AI",
+        "url": "https://example.com/mckinsey",
+        "similarity": 0.88
+      }
+    ]
+  },
+  "conflict_detected": {
+    "event_id": "01JV0SMPL0CONFLICTDETC0005",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:08.000Z",
+    "type": "conflict_detected",
+    "conflict_id": "C01",
+    "description": "公开 Web 与私有 KB 在落地周期上的结论不一致"
+  },
+  "report_chunk": {
+    "event_id": "01JV0SMPL0REPORTCHUNK00006",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:12.000Z",
+    "type": "report_chunk",
+    "content": "## 核心结论\n\n本次研究在公开 Web 与私有 KB 之间发现 1 处显著冲突..."
+  },
+  "done": {
+    "event_id": "01JV0SMPL0DONE000000000007",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:15.000Z",
+    "type": "done",
+    "report_id": "rpt-test-001"
+  },
+  "error": {
+    "event_id": "01JV0SMPL0ERROR0000000008",
+    "session_id": "test-session-001",
+    "timestamp": "2026-05-07T10:00:20.000Z",
+    "type": "error",
+    "message": "DashScope rate limit exceeded; please retry in 30s."
+  },
+  "heartbeat": {
+    "type": "heartbeat",
+    "server_time": "2026-05-07T10:00:30.000Z"
+  }
+}

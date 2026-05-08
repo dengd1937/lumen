@@ -1,3 +1,4 @@
+import type { BaseEvent } from "@/types/research-events";
 import type {
   CitationRecord,
   ConflictRecord,
@@ -5,6 +6,63 @@ import type {
   ReportData,
   ReportSection,
 } from "@/types/report";
+
+/**
+ * Mock-channel session identifier for the P3 reading page. Hooks return this
+ * when consumers ask for the active report session id. Mirrors P2 mock
+ * pattern (research-mock.ts MOCK_SESSION_ID).
+ */
+export const MOCK_REPORT_SESSION_ID = "mock-session-report-001";
+
+/**
+ * Permanently fixed sentinel — does NOT track today's date. Chosen at T3
+ * implementation; must not be updated (stability > currency). Mock event_id
+ * must be deterministic across renders (Codex M2): no Date.now() / new Date(),
+ * which would invalidate React memoization on every render.
+ */
+const MOCK_REPORT_EVENT_TIMESTAMP = "2026-05-07T00:00:00.000Z";
+
+/**
+ * Mock BaseEvent triplet factory. Per ADR-0002 D7.1 + Codex M2: event_id is
+ * a UI-key placeholder, NOT protocol-semantic — mock channel bypasses
+ * audit_log persistence, replay cursors, and reducer idempotency.
+ */
+function makeMockReportBaseEvent(stableId: string): BaseEvent {
+  return Object.freeze({
+    event_id: `mock-evt-report-${stableId}`,
+    session_id: MOCK_REPORT_SESSION_ID,
+    timestamp: MOCK_REPORT_EVENT_TIMESTAMP,
+  });
+}
+
+/**
+ * Top-level mock report event. Useful when the consumer treats the entire
+ * report as a single event (e.g., useReportData mock channel returning one
+ * BaseEvent triplet for the report payload).
+ */
+export const MOCK_REPORT_TO_EVENT: Readonly<Record<string, BaseEvent>> =
+  Object.freeze({
+    report: makeMockReportBaseEvent("report"),
+  });
+
+/**
+ * Per-KB-document mock events. Keys must align 1:1 with MOCK_KB_DOCUMENTS
+ * ids (kd-1 .. kd-11). Verified by C2-12 / C2-12b dev-only asserts below.
+ */
+export const MOCK_KB_DOC_TO_EVENT: Readonly<Record<string, BaseEvent>> =
+  Object.freeze({
+    "kd-1": makeMockReportBaseEvent("kd-1"),
+    "kd-2": makeMockReportBaseEvent("kd-2"),
+    "kd-3": makeMockReportBaseEvent("kd-3"),
+    "kd-4": makeMockReportBaseEvent("kd-4"),
+    "kd-5": makeMockReportBaseEvent("kd-5"),
+    "kd-6": makeMockReportBaseEvent("kd-6"),
+    "kd-7": makeMockReportBaseEvent("kd-7"),
+    "kd-8": makeMockReportBaseEvent("kd-8"),
+    "kd-9": makeMockReportBaseEvent("kd-9"),
+    "kd-10": makeMockReportBaseEvent("kd-10"),
+    "kd-11": makeMockReportBaseEvent("kd-11"),
+  });
 
 const MOCK_CITATIONS: readonly CitationRecord[] = [
   {
@@ -264,7 +322,7 @@ const MOCK_SECTIONS: readonly ReportSection[] = [
 ];
 
 export const MOCK_REPORT: ReportData = {
-  sessionId: "demo-001",
+  sessionId: MOCK_REPORT_SESSION_ID,
   title: "AI Agent 在企业知识管理中的最佳落地路径",
   generatedAt: "2026-05-01",
   sections: MOCK_SECTIONS,
@@ -330,5 +388,20 @@ if (process.env.NODE_ENV !== "production") {
       d.citationIds.every((id) => CITATION_IDS.has(id)),
     ),
     "C2-10: every kbDocument.citationIds must reference existing citation ids",
+  );
+  console.assert(
+    MOCK_REPORT_TO_EVENT["report"] !== undefined,
+    "C2-11: MOCK_REPORT_TO_EVENT must contain a 'report' top-level entry",
+  );
+  console.assert(
+    MOCK_REPORT.kbDocuments.every(
+      (d) => MOCK_KB_DOC_TO_EVENT[d.id] !== undefined,
+    ),
+    "C2-12: every kbDocument must have a MOCK_KB_DOC_TO_EVENT mapping",
+  );
+  const KB_DOC_IDS = new Set(MOCK_REPORT.kbDocuments.map((d) => d.id));
+  console.assert(
+    Object.keys(MOCK_KB_DOC_TO_EVENT).every((k) => KB_DOC_IDS.has(k)),
+    "C2-12b: MOCK_KB_DOC_TO_EVENT must not contain keys absent from kbDocuments",
   );
 }

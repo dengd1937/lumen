@@ -3,7 +3,7 @@
 import { ReactFlow, type EdgeTypes, type NodeTypes } from "@xyflow/react";
 import { useMemo } from "react";
 
-import { MOCK_EDGES, MOCK_NODES } from "@/lib/research-mock";
+import { useResearchData } from "@/hooks/use-research-data";
 
 import { ConflictNodeCard } from "./conflict-node";
 import { DualTrackEdge } from "./dual-track-edge";
@@ -26,8 +26,18 @@ const PRO_OPTIONS = { hideAttribution: true } as const;
 const FLOW_STYLE = { background: "var(--bg)" } as const;
 
 export function ResearchCanvas() {
-  const nodes = useMemo(() => MOCK_NODES.map((n) => ({ ...n })), []);
-  const edges = useMemo(() => MOCK_EDGES.map((e) => ({ ...e })), []);
+  const { nodes: hookNodes, edges: hookEdges } = useResearchData();
+
+  // @xyflow/react v12's `applyChange` writes selected/position/measured
+  // directly onto each node object (strict-mode throw on frozen ones).
+  // Hook returns ReadonlyArray<...frozen node>, so we shallow-copy each
+  // element at the boundary to give React Flow mutable fields while
+  // keeping the hook's Readonly contract intact upstream.
+  // useMemo identity is stable across renders when hookNodes/hookEdges
+  // references don't change (mock channel: never; SSE channel T13:
+  // only when the reducer commits a new state).
+  const nodes = useMemo(() => hookNodes.map((n) => ({ ...n })), [hookNodes]);
+  const edges = useMemo(() => hookEdges.map((e) => ({ ...e })), [hookEdges]);
 
   return (
     <div

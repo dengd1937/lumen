@@ -1,8 +1,12 @@
-import { MOCK_TASKS } from "@/lib/research-mock";
+"use client";
+
+import { useResearchData } from "@/hooks/use-research-data";
 
 import { TaskItem } from "./task-item";
 
 export function TaskPanel() {
+  const { tasks } = useResearchData();
+
   return (
     <div
       data-testid="task-panel"
@@ -15,7 +19,7 @@ export function TaskPanel() {
         </p>
       </header>
       <ul className="flex-1 overflow-y-auto" aria-live="polite">
-        {MOCK_TASKS.map((task) => (
+        {tasks.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
       </ul>
