@@ -89,7 +89,10 @@ def main() -> None:
                 if _is_source(fp):
                     edited_files.append(fp)
 
-            elif name == "Task":
+            elif name in ("Task", "Agent"):
+                # Harness renamed Task -> Agent; both names appear in
+                # transcripts depending on Claude Code version. Accept
+                # either to avoid false-positive blocks.
                 sub: str = str(inp.get("subagent_type", "")).lower()
                 if REVIEW_KEYWORD in sub:
                     saw_reviewer = True
