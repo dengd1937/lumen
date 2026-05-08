@@ -1,9 +1,9 @@
 ---
 name: planner
-description: 复杂功能和重构的专家级规划专员。用户请求功能实现、架构变更或复杂重构时主动使用。规划任务时自动激活。
+description: 用户提出新功能/架构变更/复杂重构（通常涉及多文件）且尚未批准代码改动时使用 — 输出任务级实现计划保存至 docs/plans/，用户批准前不进入实现阶段。
 tools: ["Read", "Grep", "Glob"]
 model: opus
------------
+---
 
 你是一位专注于创建可执行、详尽实现计划的专家级规划专员。
 
@@ -108,6 +108,14 @@ ADR 产出后，planner 将 ADR 的 "Decision" 字段作为输入约束，不再
 - 集成测试：[需测试的流程]
 - 端到端测试：[需测试的用户旅程]
 
+## E2E 稳定性要求
+- 所有 E2E 测试必须使用幂等设置（每个测试创建并清理自己的数据）
+- 禁止依赖共享 fixture 或其他测试的残留数据
+- 不稳定的测试用 `test.fixme()` 隔离
+- 使用 `data-testid` locator，不用 CSS/XPath
+- 使用 `waitForResponse()` / `waitForSelector()`，不用 `waitForTimeout()`
+- 配置 `trace: 'on-first-retry'`
+
 ## 风险与缓解
 - **风险**：[描述]
   - 缓解：[应对措施]
@@ -189,6 +197,11 @@ ADR 产出后，planner 将 ADR 的 "Decision" 字段作为输入约束，不再
 - 单元测试：Webhook 事件解析、档位检查逻辑
 - 集成测试：Checkout session 创建、webhook 处理
 - 端到端测试：完整升级流程（Stripe 测试模式）
+
+## E2E 稳定性要求
+- Stripe 测试使用测试模式签名密钥，不依赖生产端点
+- 每个测试创建并清理自己的订阅记录
+- 不依赖来自其他测试的残留数据
 
 ## 风险与缓解
 - **风险**：Webhook 事件乱序到达

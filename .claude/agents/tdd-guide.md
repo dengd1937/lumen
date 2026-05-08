@@ -1,6 +1,6 @@
 ---
 name: tdd-guide
-description: Test-Driven Development specialist enforcing write-tests-first methodology. Use PROACTIVELY when writing new features, fixing bugs, or refactoring code. Ensures 80%+ test coverage.
+description: "[已废弃 v2.0] 由 task-driven-development skill 内部 Task(general-purpose) + implementer-prompt.md 替代。文件保留作历史向后兼容，新调用请勿使用。"
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: sonnet
 ---
