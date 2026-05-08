@@ -21,7 +21,7 @@
 
 import { useEffect, useReducer } from "react";
 
-import { DATA_SOURCE } from "@/lib/data-source";
+import { DATA_SOURCE, SSE_API_BASE_URL } from "@/lib/data-source";
 import {
   MOCK_EDGES,
   MOCK_NODES,
@@ -193,7 +193,7 @@ export function useResearchData(): UseResearchDataResult {
   useEffect(() => {
     if (DATA_SOURCE !== "sse") return;
     const client = createSseClient({
-      url: `/api/research/${encodeURIComponent(sessionId)}/stream`,
+      url: `${SSE_API_BASE_URL}/api/research/${encodeURIComponent(sessionId)}/stream`,
       onEvent: (event) => dispatch({ kind: "event", event }),
       onError: (error) => dispatch({ kind: "error", error }),
     });

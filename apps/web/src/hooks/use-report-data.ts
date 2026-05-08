@@ -15,7 +15,7 @@
 
 import { useEffect, useReducer } from "react";
 
-import { DATA_SOURCE } from "@/lib/data-source";
+import { DATA_SOURCE, SSE_API_BASE_URL } from "@/lib/data-source";
 import { MOCK_REPORT } from "@/lib/report-mock";
 import { useSessionId } from "@/lib/session-id-context";
 import { createSseClient } from "@/lib/sse-client";
@@ -135,7 +135,7 @@ export function useReportData(): UseReportDataResult {
     // session's events land (else buildReport stitches them together).
     dispatch({ kind: "reset", sessionId });
     const client = createSseClient({
-      url: `/api/research/${encodeURIComponent(sessionId)}/stream`,
+      url: `${SSE_API_BASE_URL}/api/research/${encodeURIComponent(sessionId)}/stream`,
       onEvent: (event) => {
         dispatch({ kind: "event", event });
         // Backend-emitted error events are terminal — close the client

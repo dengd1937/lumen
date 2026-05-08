@@ -9,6 +9,7 @@ schema is in place. CORS is split-configured per ADR-0002 D8.1 + Codex H3:
 from __future__ import annotations
 
 import asyncio
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -36,9 +37,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     async with aiosqlite.connect(settings.LUMEN_DB_PATH) as conn:
         await init_db(conn)
 
+    # E2E knobs read from env so the Playwright `sse` project can flip
+    # them without rebuilding the API container:
+    #   LUMEN_STUB_FULL_CYCLE=1 -> append report_chunk + done events
+    #   LUMEN_STUB_INJECT_ERROR=1 -> append error event (T15 SSE-3)
+    emit_full_cycle = os.environ.get("LUMEN_STUB_FULL_CYCLE") == "1"
     app.state.session_manager = SessionManager(
         db_path=settings.LUMEN_DB_PATH,
-        langgraph=LangGraphStub(),
+        langgraph=LangGraphStub(emit_full_cycle=emit_full_cycle),
     )
 
     try:

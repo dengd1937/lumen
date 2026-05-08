@@ -87,6 +87,22 @@ const DEFAULT_IDLE_TIMEOUT_MS = 60_000;
 const DEFAULT_MAX_RETRIES = 5;
 const DEFAULT_BACKOFF_BASE_MS = 1_000;
 
+// Mirrors AnyWireEvent's `type` literals. The W3C spec routes typed
+// frames (with `event:` line) to addEventListener(type, ...) only —
+// onmessage alone misses them. Adding new wire types? Update this list
+// AND apps/api/app/models/events.py.
+const WIRE_EVENT_TYPES = [
+  "plan_created",
+  "node_started",
+  "node_progress",
+  "node_completed",
+  "conflict_detected",
+  "report_chunk",
+  "done",
+  "error",
+  "heartbeat",
+] as const;
+
 interface InternalState {
   current: EventSource | null;
   processedEventIds: Set<string>;
@@ -223,23 +239,27 @@ export function createSseClient(options: SseClientOptions): SseClient {
   const connect = (): void => {
     if (state.closed) return;
     closeCurrent();
-    // The EventSource constructor takes (url, EventSourceInit). The
-    // browser DOES NOT accept a `headers` field — Last-Event-ID is set
-    // via the URL only on first connect; subsequent reconnects let the
-    // browser auto-attach it from the last `id:` line received. For
-    // explicit reconnect-with-cursor (e.g. after idle), we encode it
-    // in a query param the backend honors as a fallback if Last-Event-ID
-    // header is absent. T10 backend currently only honors header; URL
-    // fallback is wired in M1.A. For now, the initial lastEventId is
-    // set on the URL via the documented hash prefix the backend ignores;
-    // the browser will populate Last-Event-ID on its own reconnect.
     const url2 =
       state.lastEventId !== undefined
         ? appendLastEventIdHint(url, state.lastEventId)
         : url;
     const source = eventSourceFactory(url2);
     state.current = source;
-    source.onmessage = (e: MessageEvent<string>) => handleMessage(e.data);
+    // The W3C SSE spec routes frames with an `event:` line to listeners
+    // matching that event name; `onmessage` only fires for frames without
+    // `event:` (default "message" type). The Lumen backend writes a
+    // typed `event:` line on every frame (T8 format_sse), so we must
+    // register named listeners — `onmessage` alone would drop everything.
+    // We use a single shared handler that re-parses `data`; sse-client
+    // remains agnostic of the wire types other than the `type`
+    // discriminator inside the JSON.
+    const dispatch = (e: MessageEvent<string>) => handleMessage(e.data);
+    for (const eventName of WIRE_EVENT_TYPES) {
+      source.addEventListener(eventName, dispatch as EventListener);
+    }
+    // Keep onmessage too as a defensive fallback for any future
+    // frame that omits `event:`.
+    source.onmessage = dispatch;
     source.onerror = () => handleError(new Error("SSE: connection error"));
     scheduleIdleReconnect();
   };

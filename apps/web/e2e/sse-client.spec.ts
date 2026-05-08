@@ -45,7 +45,16 @@ class MockEventSource implements EventSource {
     this.url = url;
   }
 
-  // Instance trigger helpers used by tests.
+  // Routing table for typed frames. Per W3C SSE spec, frames carrying
+  // an `event:` line dispatch to listeners registered via
+  // addEventListener(eventName, handler), NOT onmessage. We track them
+  // so emitTyped can simulate the browser's actual dispatch path —
+  // mirrors the production fix in sse-client.ts (T15 reviewer HIGH).
+  private listeners = new Map<string, EventListener[]>();
+
+  // Default `emit` keeps the legacy onmessage path so existing RED
+  // specs (RED 1-8) stay focused on the dedupe/backoff/done logic
+  // rather than the dispatch routing detail.
   emit(payload: object): void {
     const evt = { data: JSON.stringify(payload) } as MessageEvent<string>;
     this.onmessage?.(evt);
@@ -53,14 +62,29 @@ class MockEventSource implements EventSource {
   emitRaw(rawData: string): void {
     this.onmessage?.({ data: rawData } as MessageEvent<string>);
   }
+  // Routes through addEventListener like a real browser would for
+  // frames carrying `event:` lines (every Lumen wire frame does — see
+  // app/core/sse.py format_sse). Used by the regression spec below to
+  // catch a future revert to onmessage-only.
+  emitTyped(eventName: string, payload: object): void {
+    const evt = {
+      data: JSON.stringify(payload),
+      type: eventName,
+    } as MessageEvent<string>;
+    const handlers = this.listeners.get(eventName) ?? [];
+    for (const h of handlers) h(evt as unknown as Event);
+  }
   triggerError(): void {
     this.onerror?.({} as Event);
   }
   close(): void {
     this.closed = true;
   }
-  // EventTarget surface (unused but required by typing)
-  addEventListener(): void {}
+  addEventListener(name: string, handler: EventListener): void {
+    const list = this.listeners.get(name) ?? [];
+    list.push(handler);
+    this.listeners.set(name, list);
+  }
   removeEventListener(): void {}
   dispatchEvent(): boolean {
     return true;
@@ -372,6 +396,37 @@ test.describe("@T13 sse-client", () => {
   // -------------------------------------------------------------------------
   // Bonus — malformed payload surfaces via onError without crashing
   // -------------------------------------------------------------------------
+
+  // -------------------------------------------------------------------------
+  // Regression — typed `event:` frames (W3C SSE) must reach onEvent
+  // -------------------------------------------------------------------------
+
+  test("typed frames (event: line) route through addEventListener, not onmessage", () => {
+    // T15 reviewer HIGH: prior implementation only listened on
+    // `onmessage`, missing every frame from the Lumen backend (which
+    // always writes an `event:` line — see app/core/sse.py format_sse).
+    // This spec uses emitTyped (addEventListener path) so the behavior
+    // matches the real browser; a regression to onmessage-only would
+    // result in zero events delivered to onEvent.
+    const h = makeHarness();
+    const client = createSseClient({
+      url: "/api/research/s1/stream",
+      onEvent: (ev) => h.events.push(ev),
+      onError: (err) => h.errors.push(err),
+      eventSourceFactory: h.factory,
+      setTimeoutFn: h.clock.setTimeoutFn,
+      clearTimeoutFn: h.clock.clearTimeoutFn,
+      nowFn: h.clock.nowFn,
+    });
+    client.start();
+    const src = h.sources[0]!;
+    src.emitTyped("plan_created", planCreated("typed-1"));
+    src.emitTyped("done", done("typed-2"));
+    expect(h.events).toHaveLength(2);
+    expect(h.events[0]!.type).toBe("plan_created");
+    expect(h.events[1]!.type).toBe("done");
+    client.close();
+  });
 
   test("malformed JSON payload routes to onError, doesn't break the stream", () => {
     const h = makeHarness();
