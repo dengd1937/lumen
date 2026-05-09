@@ -1,11 +1,16 @@
 """T8 — SSE wire format tests.
 
-Per ADR-0002 D8.1 + Codex C1: every SSE frame MUST be three explicit
-lines (`id: ...` / `event: ...` / `data: ...`) followed by a blank line.
-Browser EventSource reads the `id:` SSE line — NOT a value buried in
-the JSON payload — when populating the auto-reconnect `Last-Event-ID`
-header. Without an `id:` line, reconnects come back with no header and
-the server cannot resume from the right cursor.
+Per ADR-0002 D8.1 + Codex C1: every business SSE frame MUST be three
+explicit lines (`id: ...` / `event: ...` / `data: ...`) followed by a
+blank line. Browser EventSource reads the `id:` SSE line — NOT a value
+buried in the JSON payload — when populating the auto-reconnect
+`Last-Event-ID` header. Without an `id:` line, reconnects come back with
+no header and the server cannot resume from the right cursor.
+
+T7B D-HB fix (Codex HIGH #2): heartbeat frames intentionally omit the
+`id:` line so they do NOT update EventSource.lastEventId. This preserves
+the most-recent business event id as the replay cursor -- heartbeat ids
+would 400 on lookup_seq_by_event_id because they are never in audit_log.
 """
 
 from __future__ import annotations
@@ -84,19 +89,43 @@ def test_format_sse_event_type_in_event_line() -> None:
 
 
 # ---------------------------------------------------------------------------
-# RED 3 — heartbeat frame has id: but is not persisted
+# RED 3 — heartbeat frame omits id: (T7B D-HB fix, Codex HIGH #2)
 # ---------------------------------------------------------------------------
 
 
-def test_format_heartbeat_frame_has_id_with_synthetic_value() -> None:
-    """Heartbeat MUST include an `id:` line so the browser does NOT
-    reset its internal lastEventId on receipt (per W3C SSE spec, an
-    event without an id: line clears lastEventId). The synthetic
-    `heartbeat-<server_time>` value never appears in audit_log."""
+def test_format_heartbeat_does_not_emit_id_line() -> None:
+    """T7B D-HB: Heartbeat frame must NOT emit an 'id:' line.
+
+    W3C SSE spec: a frame without 'id:' does NOT update
+    EventSource.lastEventId, so the browser retains the most-recent
+    business event id as the replay cursor.
+
+    Fixes Codex HIGH #2 (M1.0 hidden bug): the old implementation emitted
+    'id: heartbeat-<server_time>', which the browser wrote to lastEventId.
+    On reconnect the browser sent that synthetic id as Last-Event-ID;
+    lookup_seq_by_event_id could not find it in audit_log and returned 400,
+    breaking SSE-2 e2e.
+    """
     server_time = "2026-05-07T10:00:30Z"
     frame = format_heartbeat(server_time).decode("utf-8")
-    assert f"id: heartbeat-{server_time}\n" in frame
+    assert "id: " not in frame, (
+        f"Heartbeat frame must not emit 'id:' line (W3C SSE spec). Got:\n{frame!r}"
+    )
+
+
+def test_format_heartbeat_emits_event_and_data_lines() -> None:
+    """T7B: heartbeat frame has event: heartbeat + data: <json> + \\n\\n terminator."""
+    server_time = "2026-05-07T10:00:30Z"
+    frame = format_heartbeat(server_time).decode("utf-8")
     assert "event: heartbeat\n" in frame
+
+    # Strengthen: data line must be valid JSON containing type + server_time
+    data_line = next(line for line in frame.split("\n") if line.startswith("data: "))
+    payload = json.loads(data_line.removeprefix("data: "))
+    assert payload["type"] == "heartbeat"
+    assert payload["server_time"] == server_time
+
+    assert frame.endswith("\n\n")
 
 
 def test_format_heartbeat_data_decodable_and_typed() -> None:
