@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 
 import pytest
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
 from app.core.config import Settings
+from app.models.events import ErrorEvent
 from app.services.langgraph_service import LangGraphService, LangGraphStub
 
 
@@ -119,3 +121,70 @@ async def test_writer_node_yields_report_chunk_sequence() -> None:
     )
     types = [ev.type async for ev in service.astream_events("ses-12345678", "q")]
     assert types.count("report_chunk") >= 1
+
+
+# ---------------------------------------------------------------------------
+# T6 RED — ErrorEvent path + asyncio.timeout fallback
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_llm_exception_yields_error_event_then_stops() -> None:
+    """T6 RED: LangGraph node raises RuntimeError -> yield ErrorEvent -> generator exits cleanly (no raise)."""
+
+    class FailingModel(FakeListChatModel):
+        async def ainvoke(self, *args: object, **kwargs: object) -> object:  # type: ignore[override]
+            raise RuntimeError("simulated LLM failure")
+
+    service = LangGraphService(
+        model=FailingModel(responses=["x"]),
+        db_path=":memory:",
+    )
+    events = [ev async for ev in service.astream_events("ses-12345678", "q")]
+
+    error_events = [ev for ev in events if isinstance(ev, ErrorEvent)]
+    assert len(error_events) >= 1
+    assert (
+        "RuntimeError" in error_events[-1].message
+        or "runtimeerror" in error_events[-1].message.lower()
+    )
+
+
+@pytest.mark.asyncio
+async def test_asyncio_timeout_yields_error_event(monkeypatch: pytest.MonkeyPatch) -> None:
+    """T6 RED: asyncio.timeout injected -> yield ErrorEvent (message contains 'timeout')."""
+    monkeypatch.setattr("app.services.graph.researcher._RESEARCHER_TIMEOUT_S", 0.001)
+
+    class SlowModel(FakeListChatModel):
+        async def ainvoke(self, *args: object, **kwargs: object) -> object:  # type: ignore[override]
+            # Sleep longer than the injected timeout (0.001s) so asyncio.wait_for
+            # raises TimeoutError before this coroutine completes.
+            await asyncio.sleep(1.0)
+            raise AssertionError("unreachable — timeout should fire first")
+
+    service = LangGraphService(model=SlowModel(responses=["x"]), db_path=":memory:")
+    events = [ev async for ev in service.astream_events("ses-12345678", "q")]
+
+    error_events = [ev for ev in events if isinstance(ev, ErrorEvent)]
+    assert len(error_events) >= 1
+    assert (
+        "TimeoutError" in error_events[-1].message
+        or "timeouterror" in error_events[-1].message.lower()
+    )
+
+
+@pytest.mark.asyncio
+async def test_error_event_carries_session_id() -> None:
+    """T6 RED: ErrorEvent.session_id 等于传入的 session_id。"""
+
+    class FailingModel(FakeListChatModel):
+        async def ainvoke(self, *args: object, **kwargs: object) -> object:  # type: ignore[override]
+            raise RuntimeError("boom")
+
+    sid = "ses-87654321"
+    service = LangGraphService(model=FailingModel(responses=["x"]), db_path=":memory:")
+    events = [ev async for ev in service.astream_events(sid, "q")]
+
+    error_events = [ev for ev in events if isinstance(ev, ErrorEvent)]
+    assert len(error_events) >= 1
+    assert error_events[-1].session_id == sid
