@@ -147,6 +147,36 @@ curl -N http://localhost:8000/api/research/<session_id>/stream
 | `DASHSCOPE_BASE_URL` | DashScope OpenAI-compatible endpoint | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
 | `LLM_MODEL` | 使用的大模型标识符 | `qwen-max` |
 
+### Demo Day
+
+Demo Day 现场使用 replay 兜底路径，避免 qwen-max 真跑慢/挂时无救援机制（SSE-2 断线重连只救连接中断，不救 LLM hang）。
+
+**发布前（Demo Day-1）**：
+
+```bash
+# 用真实 DashScope 跑一次，输出落入 apps/api/data/demo_session.json
+DASHSCOPE_API_KEY=op://... DASHSCOPE_BASE_URL=op://... LLM_MODEL=qwen-max \
+uv run python scripts/prerender_demo_session.py --query "AI 在医疗领域的应用前景"
+```
+
+生成的 fixture 入 git（已通过 .gitignore `!apps/api/data/demo_session.json` 例外放行），与代码一起部署。
+
+**Demo 现场**：
+
+访问 `https://demo.lumen.app/research/demo`：
+
+1. Next.js Server Component 调 `GET /api/research/demo-session-id` 拿到 fixture session_id
+2. 服务端 307 redirect 到 `/research/{id}`
+3. P2 进度页挂载 SSE 通道，URL 命中后端 demo session_id
+4. 三层 guard 校验：浏览器自动附 `Origin: https://demo.lumen.app` 命中 `DEMO_ALLOWED_ORIGINS` allowlist → 放行
+5. 后端 0.1s 间隔逐帧 yield fixture events，前端 reducer 正常累积渲染
+
+**安全约束**：
+
+- `DEMO_ALLOWED_ORIGINS`（默认 `["https://demo.lumen.app"]`）/ `DEMO_REPLAY_TOKEN`（默认 None）/ `TESTING_MODE`（默认 False，须配合 `TESTING_TOKEN`）三层 guard 任一通过即放行；缺所有 → 403 Forbidden
+- 生产严禁开启 `TESTING_MODE`；该字段仅 e2e webServer / dev convenience 使用
+- 非 Demo Day 部署可设 `DEMO_ALLOWED_ORIGINS='[]'` 通过 env 关闭 origin 通道
+
 ### Release Checklist
 
 发布前必跑（本地）：
