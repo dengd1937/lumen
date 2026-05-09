@@ -151,13 +151,13 @@ async def test_create_session_duplicate_raises_integrity_error(
     """T9 session producer lock contract (per code-reviewer T6 HIGH):
     duplicate session_id MUST raise sqlite3.IntegrityError so T9 can
     map it to HTTP 409 Conflict per ADR-0002 D8.4."""
-    await create_session(conn, session_id="dup-sess")
+    await create_session(conn, session_id="dup-sess", query="dup-test")
     with pytest.raises(sqlite3.IntegrityError):
-        await create_session(conn, session_id="dup-sess")
+        await create_session(conn, session_id="dup-sess", query="dup-test")
 
 
 async def test_research_sessions_status_lifecycle(conn: aiosqlite.Connection) -> None:
-    await create_session(conn, session_id="sess-001")
+    await create_session(conn, session_id="sess-001", query="sess-001-test")
     cur = await conn.execute(
         "SELECT status FROM lumen_research_sessions WHERE id = ?", ("sess-001",)
     )
@@ -235,3 +235,57 @@ async def test_lookup_seq_by_event_id(conn: aiosqlite.Connection) -> None:
     assert seq_a == 1
     assert seq_b == 2
     assert seq_missing is None
+
+
+# ---------------------------------------------------------------------------
+# T2 RED — query column + create_session signature extension
+# ---------------------------------------------------------------------------
+
+
+async def test_create_session_with_query_stores_query(conn: aiosqlite.Connection) -> None:
+    """T2: create_session 必须接受 query 参数并将其存入 DB。"""
+    await create_session(conn, session_id="s1", query="AI 趋势分析")
+    cur = await conn.execute("SELECT query FROM lumen_research_sessions WHERE id = ?", ("s1",))
+    row = await cur.fetchone()
+    assert row is not None and row[0] == "AI 趋势分析"
+
+
+async def test_create_session_requires_query_keyword_arg(conn: aiosqlite.Connection) -> None:
+    """T2: query is a mandatory keyword-only arg; omitting or passing positional raises TypeError.
+
+    Note: TypeError is raised synchronously at call-expression evaluation time,
+    before the coroutine is awaited. pytest.raises still captures it because it
+    wraps the entire expression.
+    """
+    with pytest.raises(TypeError):
+        # query omitted -> keyword-only constraint raises TypeError (call-time, sync)
+        await create_session(conn, session_id="s2")  # type: ignore[call-arg]
+    with pytest.raises(TypeError):
+        # extra positional -> fn accepts only 1 positional (conn), extras cannot bind -> TypeError
+        await create_session(conn, "s3", "test")  # type: ignore[misc]
+
+
+async def test_init_db_creates_query_column(db_path: Path) -> None:
+    """T2: init_db must create the query column (TEXT NOT NULL DEFAULT '')."""
+    async with aiosqlite.connect(str(db_path)) as c:
+        await init_db(c)
+        cur = await c.execute("PRAGMA table_info(lumen_research_sessions)")
+        columns = {
+            row[1]: {"type": row[2], "notnull": row[3], "dflt_value": row[4]}
+            for row in await cur.fetchall()
+        }
+    assert "query" in columns, "query column missing from lumen_research_sessions"
+    col = columns["query"]
+    assert col["type"] == "TEXT"
+    assert col["notnull"] == 1
+    assert col["dflt_value"] == "''"
+
+
+async def test_create_session_query_too_long_no_db_truncation(conn: aiosqlite.Connection) -> None:
+    """T2 boundary: DB layer does not truncate long query (truncation is Pydantic's job)."""
+    long_query = "x" * 5000
+    # must not raise
+    await create_session(conn, session_id="s-long", query=long_query)
+    cur = await conn.execute("SELECT query FROM lumen_research_sessions WHERE id = ?", ("s-long",))
+    row = await cur.fetchone()
+    assert row is not None and row[0] == long_query

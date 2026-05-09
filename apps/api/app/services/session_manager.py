@@ -79,7 +79,8 @@ class SessionManager:
         async with aiosqlite.connect(self._db_path) as conn:
             await configure_connection(conn)
             try:
-                await create_session(conn, session_id=session_id)
+                # TODO(T3): replace query="" with actual user query from StartRequest
+                await create_session(conn, session_id=session_id, query="")
             except sqlite3.IntegrityError as exc:
                 # PK collision: session_id already exists (regardless of
                 # status). State machine has no back-edge — restart with
