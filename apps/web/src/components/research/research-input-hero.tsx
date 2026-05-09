@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Database, Globe, Loader2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -31,8 +32,15 @@ const SOURCES: ReadonlyArray<Source> = [
 ];
 
 export function ResearchInputHero() {
+  const router = useRouter();
   const [topic, setTopic] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // T8 D13.5: client_request_id stable across submits during component lifetime.
+  // 'use client' 组件下 useRef factory 仅在浏览器首次 mount 时计算；
+  // 与 useState + useEffect 等价，但避免额外重渲染。
+  // 不存在 SSR pre-render 路径（client component），无 hydration mismatch。
+  const clientRequestIdRef = useRef<string>(crypto.randomUUID());
   const [activeSources, setActiveSources] = useState<ReadonlySet<SourceId>>(
     () => new Set<SourceId>(['web', 'kb']),
   );
@@ -48,16 +56,42 @@ export function ResearchInputHero() {
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
-    console.log(
-      JSON.stringify({
-        topic: topic.trim(),
-        sources: Array.from(activeSources),
-      }),
-    );
-    // TODO(S3): route to /research/[id] + open SSE
+    setError(null);
+
+    try {
+      const r = await fetch('/api/research/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: topic.trim(),
+          client_request_id: clientRequestIdRef.current,
+        }),
+      });
+
+      if (!r.ok) {
+        const errBody: { detail?: string } = await r.json().catch(() => ({}));
+        setError(errBody.detail ?? `请求失败 (${r.status})`);
+        setSubmitting(false);
+        return;
+      }
+
+      const body: { session_id?: unknown } = await r.json();
+      const session_id = body.session_id;
+      if (typeof session_id !== 'string' || session_id.length === 0) {
+        setError('服务返回无效 session_id');
+        setSubmitting(false);
+        return;
+      }
+      // T9 D13: navigate to /research/[session_id].
+      // 不重置 submitting：导航期间保持 spinner，直到组件 unmount。
+      router.push(`/research/${session_id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '网络错误');
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -101,6 +135,7 @@ export function ResearchInputHero() {
           onChange={(e) => setTopic(e.target.value)}
           placeholder="例如：AI Agent 在企业知识管理中的最佳落地路径，要求对比公开行业报告与内部已有项目案例…"
           rows={4}
+          maxLength={2000}
           className="border-0 bg-transparent shadow-none resize-none focus-visible:ring-0 focus-visible:border-transparent text-base"
         />
 
@@ -136,7 +171,7 @@ export function ResearchInputHero() {
             type="button"
             data-testid="submit-btn"
             aria-label="启动研究"
-            onClick={onSubmit}
+            onClick={() => { void onSubmit(); }}
             disabled={!canSubmit}
             className="rounded-md bg-primary text-primary-fg hover:bg-primary-hover px-5 py-3 h-auto gap-1.5"
           >
@@ -153,6 +188,17 @@ export function ResearchInputHero() {
           </Button>
         </div>
       </div>
+
+      {/* T8: error display for failed POST or network errors */}
+      {error && (
+        <p
+          data-testid="hero-error"
+          role="alert"
+          className="text-sm text-destructive text-center"
+        >
+          {error}
+        </p>
+      )}
 
       <p
         data-testid="hero-meta"

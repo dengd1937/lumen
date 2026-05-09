@@ -51,33 +51,65 @@ test.describe('S2 P1 — T1 ResearchInputHero 组件契约', () => {
   });
 
   test('T1-7: submit click 后 icon-spinner visible', async ({ page }) => {
+    // Mock fetch so it hangs long enough to assert spinner state.
+    await page.route('**/api/research/start', async (route) => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 500));
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: 'test-session-id' }),
+      });
+    });
+    // mock /stream 避免导航后页面 crash（fulfill 成功后 router.push 会触发跳转）
+    await page.route('**/api/research/test-session-id/stream', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'text/event-stream', body: '' });
+    });
     await page.fill('#research-topic', '量子计算');
     await page.click('[data-testid="submit-btn"]');
     await expect(page.locator('[data-testid="icon-spinner"]')).toBeVisible();
   });
 
   test('T1-8: submitting 后 submit-btn disabled', async ({ page }) => {
+    // Mock fetch so submitting state persists during assertion.
+    await page.route('**/api/research/start', async (route) => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 500));
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: 'test-session-id' }),
+      });
+    });
+    // mock /stream 避免导航后页面 crash（fulfill 成功后 router.push 会触发跳转）
+    await page.route('**/api/research/test-session-id/stream', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'text/event-stream', body: '' });
+    });
     await page.fill('#research-topic', '量子计算');
     await page.click('[data-testid="submit-btn"]');
     await expect(page.locator('[data-testid="submit-btn"]')).toBeDisabled();
   });
 
   test('T1-9: submitting 后 icon-arrow hidden', async ({ page }) => {
+    // Mock fetch so submitting state persists during assertion.
+    await page.route('**/api/research/start', async (route) => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 500));
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: 'test-session-id' }),
+      });
+    });
+    // mock /stream 避免导航后页面 crash（fulfill 成功后 router.push 会触发跳转）
+    await page.route('**/api/research/test-session-id/stream', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'text/event-stream', body: '' });
+    });
     await page.fill('#research-topic', '量子计算');
     await page.click('[data-testid="submit-btn"]');
     await expect(page.locator('[data-testid="icon-arrow"]')).toBeHidden();
   });
 
-  test('T1-10: console.log 包含 "topic" 和 "sources" 字段', async ({ page }) => {
-    const messages: string[] = [];
-    page.on('console', (msg) => messages.push(msg.text()));
-    await page.fill('#research-topic', '量子计算');
-    await page.click('[data-testid="submit-btn"]');
-    await page.waitForTimeout(150);
-    const joined = messages.join(' ');
-    expect(joined).toContain('topic');
-    expect(joined).toContain('sources');
-  });
+  // T1-10: console.log 行为已被 T8-2（POST fetch body 校验）替代。
+  // onSubmit 实现后不再 console.log，改为调用 POST /api/research/start。
+  // 保留编号以便历史追溯，详见 M1.A T8/T9 describe block。
 
   test('T1-11: pill-web 初始 aria-pressed = "true"', async ({ page }) => {
     await expect(page.locator('[data-testid="pill-web"]')).toHaveAttribute(
@@ -244,5 +276,184 @@ test.describe('S2 P1 — T3 视觉回归 baseline', () => {
       maxDiffPixelRatio: 0.02,
       mask: [page.locator('[data-testid="hero-subtitle"]')],
     });
+  });
+});
+
+test.describe('M1.A T8/T9 — onSubmit 接后端 + router.push', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  // T8-1: submit-btn disabled when empty (回归)
+  test('T8-1: 空 textarea 时 submit-btn disabled', async ({ page }) => {
+    await expect(page.locator('[data-testid="submit-btn"]')).toBeDisabled();
+  });
+
+  // T8-2: submit calls POST /api/research/start with query + client_request_id
+  test('T8-2: 提交后 POST /api/research/start body 含 query + client_request_id（UUID 格式）', async ({ page }) => {
+    let capturedBody: { query?: string; client_request_id?: string } | null = null;
+    await page.route('**/api/research/start', async (route) => {
+      const reqBody = route.request().postDataJSON();
+      capturedBody = reqBody;
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: '01h234567890abcdefghjk' }),
+      });
+    });
+
+    await page.fill('#research-topic', '量子计算最新进展');
+    await page.click('[data-testid="submit-btn"]');
+
+    // 等 fetch 触发
+    await expect.poll(() => capturedBody !== null).toBe(true);
+
+    expect(capturedBody!.query).toBe('量子计算最新进展');
+    // client_request_id UUID v4 格式校验
+    expect(capturedBody!.client_request_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+  });
+
+  // T8-3: client_request_id stable during submit (submitting 期间按钮 disabled 保证同一 id)
+  test('T8-3: 多次按按钮（中途 fetch hang）期间 client_request_id 不变', async ({ page }) => {
+    const ids: string[] = [];
+    let resolveFirstFetch: (() => void) | null = null;
+    let firstFetchTriggered = false;
+
+    await page.route('**/api/research/start', async (route) => {
+      ids.push(route.request().postDataJSON().client_request_id);
+      if (!firstFetchTriggered) {
+        firstFetchTriggered = true;
+        // 第一次 hang 让按钮处于 submitting 状态
+        await new Promise<void>((resolve) => {
+          resolveFirstFetch = resolve;
+        });
+      }
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: '01h234567890abcdefghjk' }),
+      });
+    });
+
+    await page.fill('#research-topic', '稳定 ID 测试');
+    await page.click('[data-testid="submit-btn"]');
+
+    // 等 fetch 触发
+    await expect.poll(() => ids.length > 0).toBe(true);
+    // submitting 期间按钮 disabled，所以再点不会触发新 fetch
+    await expect(page.locator('[data-testid="submit-btn"]')).toBeDisabled();
+
+    // 释放 hang 让组件流转
+    if (resolveFirstFetch) (resolveFirstFetch as () => void)();
+
+    // 只触发了一次 fetch（第二次点击被 disabled 拦截）
+    expect(ids.length).toBe(1);
+  });
+
+  // T8-4: spinner during request
+  test('T8-4: 提交期间 spinner 可见，arrow 不可见', async ({ page }) => {
+    await page.route('**/api/research/start', async (route) => {
+      // hang 200ms 让 UI 有时间渲染 spinner
+      await new Promise<void>((resolve) => setTimeout(resolve, 200));
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: '01h234567890abcdefghjk' }),
+      });
+    });
+
+    await page.fill('#research-topic', 'spinner 测试');
+    await page.click('[data-testid="submit-btn"]');
+
+    await expect(page.locator('[data-testid="icon-spinner"]')).toBeVisible();
+    await expect(page.locator('[data-testid="icon-arrow"]')).not.toBeVisible();
+  });
+
+  // T8-5: 422 shows error message
+  test('T8-5: 422 响应展示错误信息且按钮重置', async ({ page }) => {
+    await page.route('**/api/research/start', async (route) => {
+      await route.fulfill({
+        status: 422,
+        contentType: 'application/json',
+        body: JSON.stringify({ detail: 'query 长度超限' }),
+      });
+    });
+
+    await page.fill('#research-topic', '错误测试');
+    await page.click('[data-testid="submit-btn"]');
+
+    // 错误信息可见
+    await expect(page.locator('[data-testid="hero-error"]')).toBeVisible({ timeout: 3000 });
+
+    // 按钮恢复（不再 disabled，spinner 不再）
+    await expect(page.locator('[data-testid="submit-btn"]')).toBeEnabled();
+    await expect(page.locator('[data-testid="icon-spinner"]')).not.toBeVisible();
+  });
+
+  // T8-6: network error restores button
+  test('T8-6: fetch 抛异常后 submitting=false 按钮恢复', async ({ page }) => {
+    await page.route('**/api/research/start', async (route) => {
+      await route.abort('failed');
+    });
+
+    await page.fill('#research-topic', '网络错误测试');
+    await page.click('[data-testid="submit-btn"]');
+
+    // 按钮恢复
+    await expect(page.locator('[data-testid="submit-btn"]')).toBeEnabled({ timeout: 3000 });
+    // 错误信息可见
+    await expect(page.locator('[data-testid="hero-error"]')).toBeVisible();
+  });
+
+  // T9-1: navigation after success
+  test('T9-1: 提交成功后跳转 /research/{session_id}', async ({ page }) => {
+    const ulid = '01h234567890abcdefghjk';
+    await page.route('**/api/research/start', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: ulid }),
+      });
+    });
+    // /research/[id] 后端依赖 SSE，mock 端点避免页面 crash
+    await page.route(`**/api/research/${ulid}/stream`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: '',
+      });
+    });
+
+    await page.fill('#research-topic', '导航测试');
+    await page.click('[data-testid="submit-btn"]');
+
+    await page.waitForURL(`**/research/${ulid}`, { timeout: 5000 });
+    expect(page.url()).toContain(`/research/${ulid}`);
+  });
+
+  // T9-2: spinner visible then navigates
+  test('T9-2: 提交期间显示 spinner，成功后跳转', async ({ page }) => {
+    const ulid = '01h234567890abcdefghjk';
+    await page.route('**/api/research/start', async (route) => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 150));
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ session_id: ulid }),
+      });
+    });
+    await page.route(`**/api/research/${ulid}/stream`, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'text/event-stream', body: '' });
+    });
+
+    await page.fill('#research-topic', 'spinner 然后跳转');
+    await page.click('[data-testid="submit-btn"]');
+
+    // spinner 可见
+    await expect(page.locator('[data-testid="icon-spinner"]')).toBeVisible();
+    // 跳转
+    await page.waitForURL(`**/research/${ulid}`, { timeout: 5000 });
   });
 });
