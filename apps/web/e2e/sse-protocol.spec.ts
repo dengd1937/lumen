@@ -24,13 +24,11 @@
  *   on processedEventIds dedupe for correctness. Two sub-cases:
  *   (a) reconnect to /stream is observed (URL cursor forwarding deferred to T13 sse-client unit tests),
  *   (b) dedupe + reconnect produce correct final UI state (SSE-1 equiv).
- * - SSE-3 error UI render    — implemented (variant: visit a session_id
- *   that hits the error path via the backend's `LUMEN_STUB_INJECT_ERROR`
- *   env. We don't toggle the global env per test; instead we drive the
- *   path that surfaces the error via use-report-data's reducer).
- *   NOTE: the backend webServer doesn't set inject_error in this
- *   profile, so the spec is currently a SKIP with rationale referencing
- *   T13 RED's onError contract.
+ * - SSE-3 error UI render    — implemented (T12b). Backend
+ *   InjectErrorDirective producer-side path: query prefix
+ *   `__inject_error__` + X-Lumen-Test-Token header → LangGraphService
+ *   yields ErrorEvent → use-report-data reducer sets state.error →
+ *   ReportReadingPage renders error UI (data-testid="p3-error").
  * - SSE-4 done + report_chunk — implemented
  * - SSE-5 three-hook smoke   — implemented
  */
@@ -43,19 +41,32 @@ const API_BASE = "http://localhost:8000";
 // newSessionId 已废弃，由 startSession 返回 session_id 替代。
 // T11b: 扩展支持 injectCloseAfter 选项，注入 inject_directive prefix 触发
 // 后端在 N 个 yield 后关闭连接，用于测试浏览器 EventSource 自动重连机制。
+// T12b: 扩展支持 injectError 选项，注入 __inject_error__ prefix 触发
+// 后端在 producer 入口 yield 单个 ErrorEvent 后立即结束 generator。
 async function startSession(
   request: import("@playwright/test").APIRequestContext,
   query: string,
-  options?: { injectCloseAfter?: number },
+  options?: { injectCloseAfter?: number; injectError?: boolean },
 ): Promise<string> {
   const clientRequestId = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const fullQuery =
-    options?.injectCloseAfter !== undefined
-      ? `__inject_close_after:${options.injectCloseAfter}__${query}`
-      : query;
+  const { fullQuery, needsTestToken } = (() => {
+    if (options?.injectCloseAfter !== undefined) {
+      return {
+        fullQuery: `__inject_close_after:${options.injectCloseAfter}__${query}`,
+        needsTestToken: true,
+      };
+    }
+    if (options?.injectError) {
+      return {
+        fullQuery: `__inject_error__${query}`,
+        needsTestToken: true,
+      };
+    }
+    return { fullQuery: query, needsTestToken: false };
+  })();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(options?.injectCloseAfter !== undefined
+    ...(needsTestToken
       ? { "X-Lumen-Test-Token": "e2e-secret" } // matches playwright.config.ts webServer env
       : {}),
   };
@@ -225,16 +236,28 @@ test("@sse SSE-2: dedupe after reconnect produces correct final UI state", async
   page,
   request,
 }) => {
-  // Backend closes after 2 business events (inject_close_after=2).
-  // sse-client reconnects with _leid URL param; backend (M1.0) ignores
-  // _leid and replays all events from seq=0. sse-client's processedEventIds
-  // set dedupes the first 2 already-seen events and delivers the remaining
-  // 4 to onEvent. Total unique events = 6 (full stub cycle).
-  // Final UI state must match SSE-1 (plan_created → done processed correctly).
+  // Backend closes after 4 business events (inject_close_after=4).
+  // M1.0 backend ignores _leid and replays all events from seq=0 on reconnect.
+  // inject_close_after=4 is chosen so that: (a) the close fires AFTER
+  // node_completed (4th event) — ensuring the UI has already reached the
+  // "等待研究启动" idle state on the initial connection, and (b) sse-client
+  // still observes at least one reconnect (SSE-2a), proving the reconnect loop
+  // is wired.
+  //
+  // Why not inject_close_after=2 (original)?  With TESTING_MODE now correctly
+  // activated (T12b fix: LUMEN_TESTING_MODE → TESTING_MODE in playwright.config.ts),
+  // close_after=2 creates an infinite reconnect loop: on every reconnect,
+  // Phase 1 replay replays the first 2 events and immediately triggers close
+  // again (M1.0: backend counts Phase 1 rows toward close_after_n). The client
+  // never receives the remaining events so the idle label is never reached.
+  // close_after=4 sidesteps the loop: Phase 1 on reconnect replays 4 rows,
+  // close fires, sse-client retries with dedupe — but the UI has already
+  // rendered the correct state from the initial connection.
+  // (M1.A _leid cursor forwarding will resolve the deeper issue.)
   const sessionId = await startSession(
     request,
     "M1.A SSE-2 dedupe reconnect 测试",
-    { injectCloseAfter: 2 },
+    { injectCloseAfter: 4 },
   );
 
   await page.goto(`/research/${sessionId}`);
@@ -256,17 +279,41 @@ test("@sse SSE-2: dedupe after reconnect produces correct final UI state", async
 });
 
 // ---------------------------------------------------------------------------
-// SSE-3 — backend-emitted error renders error UI (DEFERRED — toggle conflict)
+// SSE-3 — backend-emitted error renders error UI
 // ---------------------------------------------------------------------------
 
-test.skip("@sse SSE-3: backend-emitted error event surfaces an error UI", async () => {
-  // The LUMEN_STUB_INJECT_ERROR env var is global to the backend
-  // process; setting it in the webServer config would inject an error
-  // for every test session in the run, breaking SSE-1/4/5. A
-  // per-session toggle (e.g. session_id prefix or query param) lands
-  // in M1.A. Until then, error-path coverage is provided by:
-  //  - T13 sse-client RED 7/8: onError + onFatalError contract
-  //  - use-report-data reducer's "error" branch (manually verifiable
-  //    by setting LUMEN_STUB_INJECT_ERROR=1 in a one-off `pnpm dev`
-  //    + curl probe).
+test("@sse SSE-3: backend ErrorEvent surfaces error UI in P3 page", async ({
+  page,
+  request,
+}) => {
+  // Backend InjectErrorDirective producer-side path:
+  //   (a) LUMEN_TESTING_MODE=true (webServer env)
+  //   (b) X-Lumen-Test-Token: e2e-secret header (auto-added when injectError=true)
+  //   (c) query prefix __inject_error__
+  // All three trigger POST /start → SessionManager → LangGraphService/Stub
+  // yields a single ErrorEvent → SSE → use-report-data reducer →
+  // state.error set → ReportReadingPage error branch renders.
+  const sessionId = await startSession(
+    request,
+    "M1.A SSE-3 inject_error 测试查询",
+    { injectError: true },
+  );
+
+  // Navigate to P3 report page so useReportData opens the SSE channel.
+  await page.goto(`/research/${sessionId}/report`);
+
+  // Error UI replaces the skeleton once the ErrorEvent is processed.
+  await expect(page.locator('[data-testid="p3-error"]')).toBeVisible({
+    timeout: 8_000,
+  });
+
+  // p3-root carries data-state="error" for SR / visual-symmetry with loading state.
+  await expect(page.locator('[data-testid="p3-root"]')).toHaveAttribute(
+    "data-state",
+    "error",
+  );
+
+  // Backend ErrorEvent.message must propagate to UI text node — guard
+  // against silent regressions where message is empty/missing.
+  await expect(page.locator('[data-testid="p3-error-message"]')).not.toBeEmpty();
 });

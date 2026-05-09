@@ -48,14 +48,18 @@ export default defineConfig({
           // DASHSCOPE_API_KEY / DASHSCOPE_BASE_URL kept as placeholders:
           // Settings still validates them at construction (no default),
           // but stub path never consumes the values.
-          // LUMEN_TESTING_MODE + LUMEN_TESTING_TOKEN injected for T11/T12
-          // reuse (backend does not consume them in T7C phase).
+          // TESTING_MODE + TESTING_TOKEN injected for T11/T12 inject directives.
+          // Note: Settings fields are named TESTING_MODE / TESTING_TOKEN (no LUMEN_
+          // prefix) — pydantic-settings resolves them by exact field name in
+          // case_sensitive=True mode. conftest.py uses the same names. T7C originally used
+          // LUMEN_TESTING_MODE/LUMEN_TESTING_TOKEN here by mistake, which silently
+          // left TESTING_MODE=False and caused SSE-3 inject_error to never fire.
           command:
             'cd ../api && LUMEN_USE_STUB=1 ' +
             'DASHSCOPE_API_KEY=stub-placeholder ' +
             'DASHSCOPE_BASE_URL=https://stub.invalid ' +
             'LUMEN_DB_PATH=./.lumen-e2e.db ' +
-            'LUMEN_TESTING_MODE=true LUMEN_TESTING_TOKEN=e2e-secret ' +
+            'TESTING_MODE=true TESTING_TOKEN=e2e-secret ' +
             'uv run uvicorn main:app --workers 1 --port 8000',
           url: 'http://localhost:8000/health',
           reuseExistingServer: !process.env.CI,
