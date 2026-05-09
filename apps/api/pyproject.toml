@@ -43,6 +43,10 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "release_smoke: requires DASHSCOPE_API_KEY + real DashScope endpoint; manual run before release",
+]
+addopts = "-m 'not release_smoke'"
 
 [tool.mypy]
 python_version = "3.12"
