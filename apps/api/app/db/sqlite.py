@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS lumen_research_sessions (
     id         TEXT PRIMARY KEY,
     status     TEXT NOT NULL DEFAULT 'created',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    query      TEXT NOT NULL DEFAULT ''
 )
 """
 
@@ -158,17 +159,19 @@ async def create_session(
     conn: aiosqlite.Connection,
     *,
     session_id: str,
+    query: str,  # T2: mandatory keyword arg, no default
 ) -> None:
-    """Insert a new research_session with status='created'. Caller is
-    expected to follow up with `update_session_status(...)` to running
-    once the LangGraph task launches (per ADR-0002 D8.4 lifecycle).
+    """Insert a new research_session with status='created' and the user query.
+
+    Caller is expected to follow up with `update_session_status(...)` to
+    running once the LangGraph task launches (per ADR-0002 D8.4 lifecycle).
 
     Raises `sqlite3.IntegrityError` if `session_id` already exists
     (PK uniqueness). T9 session_manager catches this and maps to
     HTTP 409 Conflict per the session producer lock contract."""
     await conn.execute(
-        "INSERT INTO lumen_research_sessions (id) VALUES (?)",
-        (session_id,),
+        "INSERT INTO lumen_research_sessions (id, query) VALUES (?, ?)",
+        (session_id, query),
     )
     await conn.commit()
 
