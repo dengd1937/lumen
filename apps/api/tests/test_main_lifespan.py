@@ -45,9 +45,9 @@ class TestLifespanStubToggle:
 
         with TestClient(app):
             service = app.state.langgraph_service
-            assert isinstance(
-                service, LangGraphStub
-            ), f"Expected LangGraphStub, got {type(service).__name__}"
+            assert isinstance(service, LangGraphStub), (
+                f"Expected LangGraphStub, got {type(service).__name__}"
+            )
 
     def test_lifespan_uses_real_service_when_lumen_use_stub_unset(
         self,
@@ -59,9 +59,9 @@ class TestLifespanStubToggle:
 
         with TestClient(app):
             service = app.state.langgraph_service
-            assert isinstance(
-                service, LangGraphService
-            ), f"Expected LangGraphService, got {type(service).__name__}"
+            assert isinstance(service, LangGraphService), (
+                f"Expected LangGraphService, got {type(service).__name__}"
+            )
 
     def test_lifespan_stub_emits_full_cycle(
         self,

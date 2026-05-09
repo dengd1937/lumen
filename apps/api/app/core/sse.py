@@ -178,9 +178,7 @@ async def stream_session(
         yield _row_to_frame(row)
         yielded_business_count += 1
         if close_after_n is not None and yielded_business_count >= close_after_n:
-            raise ConnectionResetError(
-                f"T11 inject_directive: close after {close_after_n} events"
-            )
+            raise ConnectionResetError(f"T11 inject_directive: close after {close_after_n} events")
 
     # Phase 2 — live (heartbeat + poller share a bounded queue so a slow
     # ASGI consumer cannot accumulate unbounded memory). On QueueFull,

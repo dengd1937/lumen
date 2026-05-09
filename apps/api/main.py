@@ -98,7 +98,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Last-Event-ID", "Content-Type"],
+    allow_headers=["Last-Event-ID", "Content-Type", "X-Lumen-Test-Token"],
     expose_headers=["Last-Event-ID"],
 )
 

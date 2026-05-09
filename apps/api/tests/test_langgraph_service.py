@@ -10,6 +10,7 @@ from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
 from app.core.config import Settings
 from app.models.events import ErrorEvent
+from app.services.inject_directive import InjectErrorDirective
 from app.services.langgraph_service import LangGraphService, LangGraphStub
 
 
@@ -188,3 +189,98 @@ async def test_error_event_carries_session_id() -> None:
     error_events = [ev for ev in events if isinstance(ev, ErrorEvent)]
     assert len(error_events) >= 1
     assert error_events[-1].session_id == sid
+
+
+# ---------------------------------------------------------------------------
+# T12a RED — InjectErrorDirective producer-side handling
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_langgraph_service_inject_error_yields_error_event_and_returns() -> None:
+    """T12a RED: LangGraphService.astream_events with InjectErrorDirective yields exactly one
+    ErrorEvent and generator exits immediately (early return before graph loop)."""
+    service = LangGraphService(model=FakeListChatModel(responses=[]), db_path=":memory:")
+    events = [
+        ev
+        async for ev in service.astream_events(
+            "ses-inject-err",
+            "test query",
+            inject_directive=InjectErrorDirective(),
+        )
+    ]
+    assert len(events) == 1, f"Expected exactly 1 event (ErrorEvent), got {len(events)}: {events}"
+    assert isinstance(events[0], ErrorEvent), f"Expected ErrorEvent, got {type(events[0])}"
+    assert events[0].session_id == "ses-inject-err"
+    assert events[0].type == "error"
+
+
+@pytest.mark.asyncio
+async def test_langgraph_stub_inject_error_yields_error_event_and_returns() -> None:
+    """T12a RED: LangGraphStub.astream_events with InjectErrorDirective yields exactly one
+    ErrorEvent and generator exits immediately (early return before fixed-event sequence)."""
+    stub = LangGraphStub()
+    events = [
+        ev
+        async for ev in stub.astream_events(
+            "ses-stub-inject-err",
+            "test query",
+            inject_directive=InjectErrorDirective(),
+        )
+    ]
+    assert len(events) == 1, f"Expected exactly 1 event (ErrorEvent), got {len(events)}: {events}"
+    assert isinstance(events[0], ErrorEvent), f"Expected ErrorEvent, got {type(events[0])}"
+    assert events[0].session_id == "ses-stub-inject-err"
+    assert events[0].type == "error"
+
+
+@pytest.mark.asyncio
+async def test_langgraph_service_inject_directive_none_runs_normal_path() -> None:
+    """T12a RED: LangGraphService with inject_directive=None runs the normal graph path
+    (yields plan_created first, ends with done, no unexpected ErrorEvent from inject)."""
+    service = LangGraphService(
+        model=FakeListChatModel(responses=["researcher result", "writer content"]),
+        db_path=":memory:",
+    )
+    events = [
+        ev
+        async for ev in service.astream_events(
+            "ses-normal-svc",
+            "test query",
+            inject_directive=None,
+        )
+    ]
+    assert len(events) >= 2, (
+        f"Expected at least 2 events (head + tail), got {len(events)}: {events}"
+    )
+    types = [ev.type for ev in events]
+    assert types[0] == "plan_created", f"First event must be plan_created, got {types}"
+    assert types[-1] == "done", f"Last event must be done, got {types}"
+    # No inject-error event from directive (may have real error events from graph, but
+    # for FakeListChatModel this path should complete cleanly)
+    inject_errors = [ev for ev in events if isinstance(ev, ErrorEvent)]
+    assert len(inject_errors) == 0, (
+        f"inject_directive=None should not yield extra ErrorEvent, got: {inject_errors}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_langgraph_stub_inject_directive_none_runs_normal_path() -> None:
+    """T12a RED: LangGraphStub with inject_directive=None runs the full fixed-event sequence
+    (4 events: plan_created, node_started, node_progress, node_completed)."""
+    stub = LangGraphStub()
+    events = [
+        ev
+        async for ev in stub.astream_events(
+            "ses-stub-normal",
+            "test query",
+            inject_directive=None,
+        )
+    ]
+    assert len(events) >= 2, (
+        f"Expected at least 2 events (head + tail), got {len(events)}: {events}"
+    )
+    assert len(events) == 4, f"Stub default sequence is 4 events, got {len(events)}: {events}"
+    types = [ev.type for ev in events]
+    assert types[0] == "plan_created"
+    assert types[-1] == "node_completed"

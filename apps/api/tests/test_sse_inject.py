@@ -139,7 +139,9 @@ async def test_stream_session_inject_close_after_n_yields_n_then_raises_connecti
     )
 
     business = [f for f in frames if not f.startswith(b"event: heartbeat")]
-    assert len(business) == 2, f"Expected exactly 2 business frames before reset, got {len(business)}"
+    assert len(business) == 2, (
+        f"Expected exactly 2 business frames before reset, got {len(business)}"
+    )
     assert reset_raised, "ConnectionResetError should have been raised after N events"
 
 

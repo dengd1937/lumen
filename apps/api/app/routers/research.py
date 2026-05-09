@@ -165,7 +165,11 @@ async def start_session(
     if body.client_request_id is None:
         session_id = str(ULID())
         try:
-            await session_manager.start_session(session_id=session_id, query=clean_query)
+            await session_manager.start_session(
+                session_id=session_id,
+                query=clean_query,
+                inject_directive=directive,
+            )
         except SessionAlreadyRunningError as exc:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -193,7 +197,11 @@ async def start_session(
         # Create inside lock: concurrent same-key requests are serialized.
         session_id = str(ULID())
         try:
-            await session_manager.start_session(session_id=session_id, query=clean_query)
+            await session_manager.start_session(
+                session_id=session_id,
+                query=clean_query,
+                inject_directive=directive,
+            )
         except SessionAlreadyRunningError as exc:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
