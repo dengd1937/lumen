@@ -29,7 +29,7 @@ from app.db.sqlite import (
     insert_audit_log,
     update_session_status,
 )
-from app.services.langgraph_service import LangGraphStub
+from app.services.langgraph_protocol import LangGraphProtocol
 
 _TerminalStatus = Literal["completed", "failed", "cancelled"]
 
@@ -66,7 +66,7 @@ class SessionManager:
         self,
         *,
         db_path: str,
-        langgraph: LangGraphStub,
+        langgraph: LangGraphProtocol,  # T4 NN1: 升级到 Protocol 抽象
     ) -> None:
         self._db_path = db_path
         self._langgraph = langgraph
@@ -98,21 +98,25 @@ class SessionManager:
                 raise SessionAlreadyRunningError(session_id) from exc
             await update_session_status(conn, session_id=session_id, status="running")
 
-        task = asyncio.create_task(self._run(session_id), name=f"session-{session_id}")
+        task = asyncio.create_task(self._run(session_id, query), name=f"session-{session_id}")
         self.active_runs[session_id] = task
         # functools.partial keeps mypy happy with add_done_callback's
         # `Callable[[Future[Any]], None]` signature (lambda inference fails).
         task.add_done_callback(partial(self._on_task_done, session_id))
 
-    async def _run(self, session_id: str) -> None:
+    async def _run(self, session_id: str, query: str) -> None:
         """Producer coroutine: consume LangGraph events, persist each
         to audit_log. The terminal status is decided here (not in the
         done_callback) and written via `asyncio.shield` so it survives
         external cancellation — that way we never leave a dangling
-        cleanup task to be GC'd by the event loop after shutdown."""
+        cleanup task to be GC'd by the event loop after shutdown.
+
+        T4 NN1: query 透传到 astream_events (替代 T2/T3 transitional query="")。
+        T6 D12.4 时同步加 inject_directive 参数 + 终态契约 (ev.type=="error" 显式置 failed)。
+        """
         terminal_status: _TerminalStatus = "completed"
         try:
-            async for ev in self._langgraph.astream_events(session_id):
+            async for ev in self._langgraph.astream_events(session_id, query):
                 payload = ev.model_dump_json(exclude_none=True)
                 async with aiosqlite.connect(self._db_path) as conn:
                     await configure_connection(conn)

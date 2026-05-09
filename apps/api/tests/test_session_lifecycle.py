@@ -39,7 +39,7 @@ from app.services.session_manager import (
 
 async def test_langgraph_stub_emits_4_events_in_order() -> None:
     stub = LangGraphStub()
-    events = [ev async for ev in stub.astream_events("test-session")]
+    events = [ev async for ev in stub.astream_events("test-session", query="")]
     assert len(events) == 4
     assert isinstance(events[0], PlanCreatedEvent)
     assert isinstance(events[1], NodeStartedEvent)
@@ -53,7 +53,7 @@ async def test_langgraph_stub_event_ids_are_unique() -> None:
     """ULID-style event_id stability: each event in the sequence has a
     unique id so audit_log UNIQUE constraint isn't violated."""
     stub = LangGraphStub()
-    events = [ev async for ev in stub.astream_events("test-session")]
+    events = [ev async for ev in stub.astream_events("test-session", query="")]
     event_ids = [ev.event_id for ev in events]
     assert len(set(event_ids)) == 4
 
@@ -63,7 +63,7 @@ async def test_langgraph_stub_failing_at_index_raises() -> None:
     stub = LangGraphStub(fail_at=2)
     collected = []
     with pytest.raises(RuntimeError, match="stub failure"):
-        async for ev in stub.astream_events("test-session"):
+        async for ev in stub.astream_events("test-session", query=""):
             collected.append(ev)
     # 2 events emitted before failure injection at index 2.
     assert len(collected) == 2
