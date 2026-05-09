@@ -23,6 +23,12 @@ T4 additions (ADR-0003 D11 + NN1):
     kwargs (NN1 interface propagation; stub ignores both, stays simple).
   * LangGraphService skeleton: constructor + from_settings factory +
     empty astream_events. T5 fills in the three-node graph + routing.
+
+T5 additions (ADR-0003 D10.1):
+  * LangGraphService._build_graph: assembles planner→researcher→writer
+    StateGraph, compiles it, and stores as self._graph.
+  * LangGraphService.astream_events: drives _graph.astream_events and
+    routes each raw StreamEvent to a lumen AnyEvent via route_stream_event.
 """
 
 from __future__ import annotations
@@ -30,11 +36,10 @@ from __future__ import annotations
 import asyncio
 import os
 from collections.abc import AsyncGenerator
-from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from ulid import ULID
-
+from app.core.utils import new_event_id as _new_event_id
+from app.core.utils import now_iso as _now_iso
 from app.models.events import (
     AnyEvent,
     DoneEvent,
@@ -47,20 +52,19 @@ from app.models.events import (
     ReportChunkEvent,
     SourceRef,
 )
+from app.services.graph.planner import planner_node_factory
+from app.services.graph.researcher import researcher_node_factory
+from app.services.graph.routing import route_stream_event
+from app.services.graph.state import GraphState
+from app.services.graph.writer import writer_node_factory
 from app.services.inject_directive import InjectDirective
 
 if TYPE_CHECKING:
     from langchain_core.language_models import BaseChatModel
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.graph.state import CompiledStateGraph
 
     from app.core.config import Settings
-
-
-def _now_iso() -> str:
-    return datetime.now(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
-
-
-def _new_event_id() -> str:
-    return str(ULID())
 
 
 class LangGraphStub:
@@ -199,22 +203,36 @@ def init_chat_model(**kwargs: str) -> BaseChatModel:
 
 
 class LangGraphService:
-    """T4 -- Real LangGraph service skeleton.
+    """T5 -- Real LangGraph service with three-node graph + routing.
 
     M1.A implementation: builds a StateGraph with three nodes
-    (planner -> researcher -> writer) and injects a BaseChatModel
+    (planner → researcher → writer) and injects a BaseChatModel
     instance via the init_chat_model factory.
 
-    T4 phase: constructor + from_settings + empty astream_events skeleton.
-    T5 fills in the three-node graph + routing layer.
+    T5: constructor builds graph immediately (D11 singleton semantics);
+        astream_events drives graph.astream_events and routes raw
+        StreamEvents to lumen AnyEvents via route_stream_event.
     T6 adds ErrorEvent path + asyncio.timeout.
     """
 
     def __init__(self, *, model: BaseChatModel, db_path: str) -> None:
         self._model = model
         self._db_path = db_path
-        # _graph is built by _build_graph() when T5 implements the real nodes.
-        self._graph: object | None = None
+        self._graph: CompiledStateGraph[GraphState] = self._build_graph()
+
+    def _build_graph(self) -> CompiledStateGraph[GraphState]:
+        """Assemble and compile the three-node StateGraph."""
+        from langgraph.graph import END, StateGraph
+
+        g: StateGraph[GraphState] = StateGraph(GraphState)
+        g.add_node("planner", planner_node_factory(self._model))  # type: ignore[call-overload]
+        g.add_node("researcher", researcher_node_factory(self._model))  # type: ignore[call-overload]
+        g.add_node("writer", writer_node_factory(self._model))  # type: ignore[call-overload]
+        g.set_entry_point("planner")
+        g.add_edge("planner", "researcher")
+        g.add_edge("researcher", "writer")
+        g.add_edge("writer", END)
+        return g.compile()
 
     @classmethod
     def from_settings(cls, settings: Settings) -> LangGraphService:
@@ -238,8 +256,31 @@ class LangGraphService:
         *,
         inject_directive: InjectDirective | None = None,
     ) -> AsyncGenerator[AnyEvent, None]:
-        """T4 skeleton: yields nothing. T5 implements the three-node graph + StreamEvent routing."""
-        # The unreachable yield makes this function an async generator as required by the protocol.
-        # mypy: the yield is intentionally unreachable; return early in T4.
-        return
-        yield  # pragma: no cover
+        """Drive the three-node graph and route StreamEvents to lumen AnyEvents.
+
+        inject_directive is accepted for interface parity (T6 will use it).
+        """
+        config: RunnableConfig = {"configurable": {"thread_id": session_id}}
+        initial_state: GraphState = {
+            "query": query,
+            "session_id": session_id,
+            "plan_nodes": [],
+            "report_chunks": [],
+        }
+        emitted_done = False
+        async for raw in self._graph.astream_events(initial_state, config=config, version="v2"):
+            ev = route_stream_event(dict(raw), session_id=session_id)
+            if ev is not None:
+                if ev.type == "done":
+                    emitted_done = True
+                yield ev
+
+        if not emitted_done:
+            # Fallback: graph terminal state routing miss → explicit DoneEvent
+            yield DoneEvent(
+                event_id=_new_event_id(),
+                session_id=session_id,
+                timestamp=_now_iso(),
+                type="done",
+                report_id=f"rpt-{session_id[:8]}",
+            )

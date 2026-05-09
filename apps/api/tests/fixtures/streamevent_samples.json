@@ -13,7 +13,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\"}}"
+      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\"}}",
+      "metadata_langgraph_node": null
     },
     {
       "event": "on_chain_start",
@@ -34,7 +35,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\"}}"
+      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\"}}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_start",
@@ -58,7 +60,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"messages\": [[\"content='为查询拆分 5 个子任务: AI 在医疗领域的应用前景' additional_kwargs={} response_metadata={}\"]]}}"
+      "data_preview": "{\"input\": {\"messages\": [[\"content='为查询拆分 5 个子任务: AI 在医疗领域的应用前景' additional_kwargs={} response_metadata={}\"]]}}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -82,7 +85,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='P' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='P' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -106,7 +110,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='l' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='l' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -130,7 +135,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='a' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='a' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -154,7 +160,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='n' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='n' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -178,7 +185,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=':' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=':' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -202,7 +210,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -226,7 +235,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='1' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='1' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -250,7 +260,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -274,7 +285,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -298,7 +310,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='文' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='文' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -322,7 +335,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='献' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='献' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -346,7 +360,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='综' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='综' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -370,7 +385,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='述' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='述' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -394,7 +410,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -418,7 +435,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -442,7 +460,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='2' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='2' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -466,7 +485,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -490,7 +510,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -514,7 +535,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='案' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='案' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -538,7 +560,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='例' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='例' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -562,7 +585,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='分' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='分' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -586,7 +610,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='析' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='析' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -610,7 +635,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -634,7 +660,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -658,7 +685,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='3' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='3' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -682,7 +710,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -706,7 +735,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -730,7 +760,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='趋' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='趋' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -754,7 +785,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='势' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='势' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -778,7 +810,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='预' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='预' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -802,7 +835,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='测' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='测' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -826,7 +860,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -850,7 +885,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -874,7 +910,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='4' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='4' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -898,7 +935,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -922,7 +960,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -946,7 +985,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='风' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='风' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -970,7 +1010,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='险' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='险' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -994,7 +1035,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='评' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='评' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1018,7 +1060,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='估' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='估' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1042,7 +1085,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=';' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1066,7 +1110,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1090,7 +1135,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='5' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='5' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1114,7 +1160,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=')' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1138,7 +1185,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1162,7 +1210,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='监' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='监' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1186,7 +1235,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='管' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='管' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1210,7 +1260,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='政' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='政' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_stream",
@@ -1234,7 +1285,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='策' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\"}"
+      "data_preview": "{\"chunk\": \"content='策' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\"}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chat_model_end",
@@ -1259,7 +1311,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"output\": \"content='Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[]\", \"input\": {\"messages\": [[\"content='为查询拆分 5 个子任务: AI 在医疗领域的应用前景' additional_kwargs={} response_metadata={}\"]]}}"
+      "data_preview": "{\"output\": \"content='Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16d9-77f2-8f28-5014fd4f2e7f' tool_calls=[] invalid_tool_calls=[]\", \"input\": {\"messages\": [[\"content='为查询拆分 5 个子任务: AI 在医疗领域的应用前景' additional_kwargs={} response_metadata={}\"]]}}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chain_stream",
@@ -1280,7 +1333,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": {\"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}"
+      "data_preview": "{\"chunk\": {\"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chain_end",
@@ -1302,7 +1356,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"output\": {\"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}, \"input\": {\"query\": \"AI 在医疗领域的应用前景\"}}"
+      "data_preview": "{\"output\": {\"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}, \"input\": {\"query\": \"AI 在医疗领域的应用前景\"}}",
+      "metadata_langgraph_node": "planner"
     },
     {
       "event": "on_chain_stream",
@@ -1316,7 +1371,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": {\"planner\": {\"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}}"
+      "data_preview": "{\"chunk\": {\"planner\": {\"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}}",
+      "metadata_langgraph_node": null
     },
     {
       "event": "on_chain_start",
@@ -1337,7 +1393,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}"
+      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_start",
@@ -1361,7 +1418,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"messages\": [[\"content=\\\"基于子任务汇总: ['Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策']\\\" additional_kwargs={} response_metadata={}\"]]}}"
+      "data_preview": "{\"input\": {\"messages\": [[\"content=\\\"基于子任务汇总: ['Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策']\\\" additional_kwargs={} response_metadata={}\"]]}}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1385,7 +1443,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='r' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='r' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1409,7 +1468,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='e' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='e' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1433,7 +1493,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='s' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='s' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1457,7 +1518,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='e' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='e' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1481,7 +1543,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='a' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='a' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1505,7 +1568,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='r' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='r' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1529,7 +1593,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='c' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='c' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1553,7 +1618,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='h' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='h' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1577,7 +1643,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='e' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='e' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1601,7 +1668,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='r' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='r' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1625,7 +1693,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1649,7 +1718,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='子' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='子' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1673,7 +1743,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='任' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='任' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1697,7 +1768,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='务' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='务' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1721,7 +1793,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='汇' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='汇' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1745,7 +1818,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='总' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='总' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1769,7 +1843,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='：' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='：' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1793,7 +1868,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='基' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='基' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1817,7 +1893,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='于' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='于' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1841,7 +1918,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='检' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='检' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1865,7 +1943,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='索' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='索' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1889,7 +1968,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='结' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='结' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1913,7 +1993,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='果' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='果' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1937,7 +2018,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='，' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='，' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1961,7 +2043,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='A' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='A' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -1985,7 +2068,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='I' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='I' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2009,7 +2093,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2033,7 +2118,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='在' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='在' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2057,7 +2143,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='医' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='医' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2081,7 +2168,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='疗' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='疗' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2105,7 +2193,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='影' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='影' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2129,7 +2218,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='像' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='像' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2153,7 +2243,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2177,7 +2268,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='辅' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='辅' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2201,7 +2293,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='助' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='助' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2225,7 +2318,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='诊' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='诊' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2249,7 +2343,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='断' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='断' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2273,7 +2368,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2297,7 +2393,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='药' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='药' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2321,7 +2418,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='物' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='物' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2345,7 +2443,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='研' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='研' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2369,7 +2468,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='发' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='发' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2393,7 +2493,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='三' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='三' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2417,7 +2518,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='方' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='方' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2441,7 +2543,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='向' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='向' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2465,7 +2568,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='已' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='已' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2489,7 +2593,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='有' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='有' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2513,7 +2618,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='成' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='成' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2537,7 +2643,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='熟' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='熟' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2561,7 +2668,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='应' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='应' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2585,7 +2693,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='用' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='用' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_stream",
@@ -2609,7 +2718,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='。' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\"}"
+      "data_preview": "{\"chunk\": \"content='。' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\"}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chat_model_end",
@@ -2634,7 +2744,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"output\": \"content='researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[]\", \"input\": {\"messages\": [[\"content=\\\"基于子任务汇总: ['Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策']\\\" additional_kwargs={} response_metadata={}\"]]}}"
+      "data_preview": "{\"output\": \"content='researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16df-7e01-b994-4283f6725261' tool_calls=[] invalid_tool_calls=[]\", \"input\": {\"messages\": [[\"content=\\\"基于子任务汇总: ['Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策']\\\" additional_kwargs={} response_metadata={}\"]]}}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chain_stream",
@@ -2655,7 +2766,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": {\"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}}"
+      "data_preview": "{\"chunk\": {\"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chain_end",
@@ -2677,7 +2789,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"output\": {\"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}, \"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}"
+      "data_preview": "{\"output\": {\"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}, \"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"]}}",
+      "metadata_langgraph_node": "researcher"
     },
     {
       "event": "on_chain_stream",
@@ -2691,7 +2804,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": {\"researcher\": {\"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}}}"
+      "data_preview": "{\"chunk\": {\"researcher\": {\"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}}}",
+      "metadata_langgraph_node": null
     },
     {
       "event": "on_chain_start",
@@ -2712,7 +2826,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"], \"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}}"
+      "data_preview": "{\"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"], \"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\"}}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_start",
@@ -2736,7 +2851,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"input\": {\"messages\": [[\"content='基于汇总写报告: researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。' additional_kwargs={} response_metadata={}\"]]}}"
+      "data_preview": "{\"input\": {\"messages\": [[\"content='基于汇总写报告: researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。' additional_kwargs={} response_metadata={}\"]]}}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2760,7 +2876,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='#' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='#' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2784,7 +2901,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='#' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='#' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2808,7 +2926,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2832,7 +2951,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='核' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='核' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2856,7 +2976,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='心' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='心' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2880,7 +3001,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='结' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='结' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2904,7 +3026,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='论' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='论' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2928,7 +3051,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='\\\\n' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='\\\\n' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2952,7 +3076,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='\\\\n' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='\\\\n' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -2976,7 +3101,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='根' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='根' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3000,7 +3126,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='据' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='据' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3024,7 +3151,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='汇' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='汇' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3048,7 +3176,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='总' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='总' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3072,7 +3201,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='，' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='，' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3096,7 +3226,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='A' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='A' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3120,7 +3251,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='I' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='I' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3144,7 +3276,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content=' ' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3168,7 +3301,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='在' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='在' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3192,7 +3326,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='医' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='医' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3216,7 +3351,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='疗' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='疗' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3240,7 +3376,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='领' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='领' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3264,7 +3401,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='域' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='域' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3288,7 +3426,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='的' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='的' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3312,7 +3451,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='应' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='应' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3336,7 +3476,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='用' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='用' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3360,7 +3501,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='前' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='前' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3384,7 +3526,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='景' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='景' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3408,7 +3551,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='集' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='集' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3432,7 +3576,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='中' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='中' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3456,7 +3601,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='在' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='在' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3480,7 +3626,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='三' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='三' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3504,7 +3651,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='个' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='个' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3528,7 +3676,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='方' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='方' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3552,7 +3701,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='向' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='向' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3576,7 +3726,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='：' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='：' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3600,7 +3751,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='影' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='影' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3624,7 +3776,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='像' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='像' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3648,7 +3801,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='诊' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='诊' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3672,7 +3826,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='断' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='断' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3696,7 +3851,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3720,7 +3876,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='新' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='新' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3744,7 +3901,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='药' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='药' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3768,7 +3926,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='研' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='研' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3792,7 +3951,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='发' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='发' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3816,7 +3976,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='、' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3840,7 +4001,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='个' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='个' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3864,7 +4026,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='性' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='性' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3888,7 +4051,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='化' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='化' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3912,7 +4076,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='治' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='治' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3936,7 +4101,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='疗' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='疗' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3960,7 +4126,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='.' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='.' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -3984,7 +4151,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='.' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}"
+      "data_preview": "{\"chunk\": \"content='.' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[]\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_stream",
@@ -4008,7 +4176,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": \"content='.' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\"}"
+      "data_preview": "{\"chunk\": \"content='.' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\"}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chat_model_end",
@@ -4033,7 +4202,8 @@
         "ls_provider",
         "thread_id"
       ],
-      "data_preview": "{\"output\": \"content='## 核心结论\\\\n\\\\n根据汇总，AI 在医疗领域的应用前景集中在三个方向：影像诊断、新药研发、个性化治疗...' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\", \"input\": {\"messages\": [[\"content='基于汇总写报告: researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。' additional_kwargs={} response_metadata={}\"]]}}"
+      "data_preview": "{\"output\": \"content='## 核心结论\\\\n\\\\n根据汇总，AI 在医疗领域的应用前景集中在三个方向：影像诊断、新药研发、个性化治疗...' additional_kwargs={} response_metadata={} id='lc_run--019e0a81-16e2-7f93-a995-084f1f968b33' tool_calls=[] invalid_tool_calls=[] tool_call_chunks=[] chunk_position='last'\", \"input\": {\"messages\": [[\"content='基于汇总写报告: researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。' additional_kwargs={} response_metadata={}\"]]}}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chain_stream",
@@ -4054,7 +4224,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": {\"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研\", \"发\", \"、\", \"个\", \"性\", \"化\", \"治\", \"疗\", \".\", \".\", \".\"]}}"
+      "data_preview": "{\"chunk\": {\"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研\", \"发\", \"、\", \"个\", \"性\", \"化\", \"治\", \"疗\", \".\", \".\", \".\"]}}",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chain_end",
@@ -4076,7 +4247,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"output\": {\"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研\", \"发\", \"、\", \"个\", \"性\", \"化\", \"治\", \"疗\", \".\", \".\", \".\"]}, \"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"], \"s"
+      "data_preview": "{\"output\": {\"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研\", \"发\", \"、\", \"个\", \"性\", \"化\", \"治\", \"疗\", \".\", \".\", \".\"]}, \"input\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"], \"s",
+      "metadata_langgraph_node": "writer"
     },
     {
       "event": "on_chain_stream",
@@ -4090,7 +4262,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"chunk\": {\"writer\": {\"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研\", \"发\", \"、\", \"个\", \"性\", \"化\", \"治\", \"疗\", \".\", \".\", \".\"]}}}"
+      "data_preview": "{\"chunk\": {\"writer\": {\"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研\", \"发\", \"、\", \"个\", \"性\", \"化\", \"治\", \"疗\", \".\", \".\", \".\"]}}}",
+      "metadata_langgraph_node": null
     },
     {
       "event": "on_chain_end",
@@ -4104,7 +4277,8 @@
         "ls_integration",
         "thread_id"
       ],
-      "data_preview": "{\"output\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"], \"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\", \"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研"
+      "data_preview": "{\"output\": {\"query\": \"AI 在医疗领域的应用前景\", \"plan\": [\"Plan: 1) 文献综述; 2) 案例分析; 3) 趋势预测; 4) 风险评估; 5) 监管政策\"], \"summary\": \"researcher 子任务汇总：基于检索结果，AI 在医疗影像、辅助诊断、药物研发三方向已有成熟应用。\", \"report_chunks\": [\"#\", \"#\", \" \", \"核\", \"心\", \"结\", \"论\", \"\\n\", \"\\n\", \"根\", \"据\", \"汇\", \"总\", \"，\", \"A\", \"I\", \" \", \"在\", \"医\", \"疗\", \"领\", \"域\", \"的\", \"应\", \"用\", \"前\", \"景\", \"集\", \"中\", \"在\", \"三\", \"个\", \"方\", \"向\", \"：\", \"影\", \"像\", \"诊\", \"断\", \"、\", \"新\", \"药\", \"研",
+      "metadata_langgraph_node": null
     }
   ]
 }
