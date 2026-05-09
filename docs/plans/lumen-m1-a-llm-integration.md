@@ -48,17 +48,42 @@ T0 是强制前置 spike（R-M1A-1，v2 扩为三节点 + 全 event 类型 fixtu
 
 > 本节在 T0 / T10 spike 执行完成后填充。spike 执行前此处为占位。
 
-### StreamEvent → AnyEvent 映射表（T0 v2 产出 — 三节点 fixture）
+### StreamEvent → AnyEvent 映射表（T0 v2 产出 — 三节点 fixture，2026-05-09 执行）
 
-| LangGraph StreamEvent.event | LangGraph StreamEvent.name | 触发条件 | yield 的 lumen AnyEvent |
+**Spike 模式**：fake-list-chat-model（无 DASHSCOPE_API_KEY，按 T0 失败矩阵 fallback-2 路径）；fixture 文件 `apps/api/tests/fixtures/streamevent_samples.json` 含 174 个 StreamEvent 样本，覆盖 15 种 (event, name) 唯一组合。
+
+**LangGraph 1.1.8 `astream_events(version="v2")` 输出结构**：
+- 每个 StreamEvent 是 dict，关键字段：`event` / `name` / `run_id` / `tags` / `data` / `metadata`
+- 三层 chain 事件：图级（`name="LangGraph"`）/ 节点级（`name="planner"` / `"researcher"` / `"writer"`）/ LLM 级（`name=` 模型类名，如 `FakeListChatModel`，真 DashScope 时为 `ChatOpenAI` 或类似）
+- 节点级事件的 `metadata.langgraph_node` 字段也指节点名（与 `name` 字段冗余但更稳定，routing 层优先用 metadata）
+
+**Routing 映射规则**（→ lumen AnyEvent）：
+
+| StreamEvent.event | 判别条件 | data 字段 | yield 的 lumen 事件 |
 |---|---|---|---|
-| （T0 执行后填入；至少覆盖 6 行：planner-on_chain_end、researcher-on_chain_start/on_chain_end、writer-on_chat_model_stream/on_chat_model_end、graph-on_chain_end） | — | — | — |
+| `on_chain_end` | `metadata.langgraph_node == "planner"` | `data.output.plan` (list[str]) | `PlanCreatedEvent(nodes=parse_plan(data.output.plan))` |
+| `on_chain_start` | `metadata.langgraph_node == "researcher"`（或多 researcher 时的子任务节点） | `data.input.query` | `NodeStartedEvent(node_id=run_id, track="web")` |
+| `on_chain_end` | `metadata.langgraph_node == "researcher"` | `data.output.summary` | `NodeCompletedEvent(node_id=run_id, sources=parse_sources(summary))` |
+| `on_chat_model_stream` | `metadata.langgraph_node == "writer"` | `data.chunk.content` (token) | `ReportChunkEvent(content=chunk.content)` |
+| `on_chain_end` | `name == "LangGraph"`（图终态） | `data.output` (final state) | `DoneEvent(report_id=...)` |
+| 任意层异常（外层 try/except） | — | exception message | `ErrorEvent(message=str(e))` |
 
-**节点命名约定**（T0 执行后确认）：图中节点名称（`planner` / `researcher` / `writer`）与 LangGraph `event["name"]` 字段的对应关系。
+**不映射的 StreamEvent**（routing 层返回 None，过滤掉）：
+- `on_chain_start` / `on_chain_stream` / `on_chain_end` 图级（`name="LangGraph"` 的 start/stream，避免与节点事件重复）
+- `on_chat_model_start` / `on_chat_model_end`（LLM 调用细节，前端不需要）
+- `on_chain_start` / `on_chain_stream` 节点级（避免与 on_chain_end 内容重复）
+- `on_chain_start` / `on_chain_end` 节点级（针对 planner / writer，因为 planner 已用 on_chain_end yield PlanCreated；writer 已用 on_chat_model_stream yield ReportChunk）
 
-**Fixture 文件**（T0 执行后保留）：`apps/api/tests/fixtures/streamevent_samples.json`（StreamEvent dict 真实样本，T5 routing 单测消费）。
+**节点命名约定**：图中节点名为 `planner` / `researcher` / `writer`（**全小写，下划线分隔**）。LangGraph 自动把 `graph.add_node("planner", planner_node)` 的第一个参数作为 `name` 字段值。M1.A 实装时（T5）必须沿用这一命名。
 
-**T0 审批门控**：用户确认映射表 + fixture 后，T1 方可开始。
+**重要 caveat（fake mode 限制）**：
+- FakeListChatModel 的 `astream` 行为是**逐字符 chunk**（174 events 中很多 on_chat_model_stream 是单字符 chunk）；真 DashScope 可能一次 chunk 返回多字符或整段。Routing 规则不变，但 T5 实装时需要决策是否在 service 层做 token 聚合（如每 N 字符或每 N ms 合并一个 ReportChunkEvent）。
+- writer 节点的 LLM 调用真 DashScope 用 `model.astream(...)`（已在 spike 实现），返回 `AIMessageChunk` 对象；其 `.content` 属性是该 chunk 的字符串内容。
+- T_SMOKE 任务（M1.A 后期）必须用真 DashScope 跑同等流程，验证 token chunk 行为符合预期。
+
+**Fixture 文件**：`apps/api/tests/fixtures/streamevent_samples.json`（保留，T5 routing 单测消费）。
+
+**T0 审批门控**：用户确认上述映射表后，T1 方可开始。FakeMode caveat 已记录在本节，T_SMOKE 时复核。
 
 ### T0 失败矩阵（v2 新增 — 经 Codex HIGH #5）
 
