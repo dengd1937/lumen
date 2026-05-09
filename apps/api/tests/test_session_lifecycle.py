@@ -13,6 +13,7 @@ Note: `initialized_db` fixture is now in conftest.py (shared with T3 tests).
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import re
 from pathlib import Path
 
@@ -26,6 +27,7 @@ from app.models.events import (
     NodeStartedEvent,
     PlanCreatedEvent,
 )
+from app.services.inject_directive import InjectCloseAfterDirective, InjectErrorDirective
 from app.services.langgraph_service import LangGraphStub
 from app.services.session_manager import (
     SessionAlreadyRunningError,
@@ -226,9 +228,133 @@ async def test_session_manager_persists_audit_log_for_each_event(
 
 
 # ---------------------------------------------------------------------------
+# T6 D12.4 RED — SessionManager 终态契约 + inject_directive 透传
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_session_manager_error_event_marks_session_failed(
+    initialized_db: Path,
+) -> None:
+    """T6 D12.4 RED: 真实 LangGraphService 注入 FailingModel → session 'failed' + audit_log 含 error 事件。"""
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    from app.services.langgraph_service import LangGraphService
+
+    class FailingModel(FakeListChatModel):
+        async def ainvoke(self, *args: object, **kwargs: object) -> object:  # type: ignore[override]
+            raise RuntimeError("forced failure")
+
+    service = LangGraphService(
+        model=FailingModel(responses=["x"]),
+        db_path=str(initialized_db),
+    )
+    sm = SessionManager(db_path=str(initialized_db), langgraph=service)
+    await sm.start_session(session_id="sess-err-1", query="q")
+
+    if "sess-err-1" in sm.active_runs:
+        task = sm.active_runs["sess-err-1"]
+        with contextlib.suppress(asyncio.TimeoutError, Exception):
+            await asyncio.wait_for(asyncio.shield(task), timeout=3.0)
+    await asyncio.sleep(0.1)
+
+    async with aiosqlite.connect(str(initialized_db)) as c:
+        cur = await c.execute(
+            "SELECT status FROM lumen_research_sessions WHERE id = ?", ("sess-err-1",)
+        )
+        row = await cur.fetchone()
+        assert row is not None and row[0] == "failed"
+
+        cur = await c.execute(
+            "SELECT COUNT(*) FROM lumen_audit_log WHERE session_id = ? AND event_type = 'error'",
+            ("sess-err-1",),
+        )
+        cnt_row = await cur.fetchone()
+        assert cnt_row is not None and cnt_row[0] >= 1
+
+
+@pytest.mark.asyncio
+async def test_session_manager_error_event_no_exception_propagation(
+    initialized_db: Path,
+) -> None:
+    """T6 D12.4 RED: LangGraphService yields ErrorEvent then returns cleanly (no raise); SessionManager still marks failed."""
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    from app.services.langgraph_service import LangGraphService
+
+    class FailingModel(FakeListChatModel):
+        async def ainvoke(self, *args: object, **kwargs: object) -> object:  # type: ignore[override]
+            raise RuntimeError("oops")
+
+    service = LangGraphService(model=FailingModel(responses=["x"]), db_path=str(initialized_db))
+    sm = SessionManager(db_path=str(initialized_db), langgraph=service)
+
+    await sm.start_session(session_id="sess-err-2", query="q")
+    if "sess-err-2" in sm.active_runs:
+        task = sm.active_runs["sess-err-2"]
+        with contextlib.suppress(asyncio.TimeoutError, Exception):
+            await asyncio.wait_for(asyncio.shield(task), timeout=3.0)
+    await asyncio.sleep(0.1)
+
+    async with aiosqlite.connect(str(initialized_db)) as c:
+        cur = await c.execute(
+            "SELECT status FROM lumen_research_sessions WHERE id = ?", ("sess-err-2",)
+        )
+        row = await cur.fetchone()
+        assert row is not None and row[0] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_session_manager_inject_directive_bound_per_task(
+    initialized_db: Path,
+) -> None:
+    """T6 NNN4 RED: 验证 inject_directive 通过参数闭包绑定到各 task,不通过实例字段共享(避免 race)。"""
+    from collections.abc import AsyncGenerator
+
+    from app.models.events import AnyEvent
+
+    received: dict[str, object] = {}
+
+    class RecordingProtocol:
+        async def astream_events(
+            self,
+            session_id: str,
+            query: str,
+            *,
+            inject_directive: object = None,
+        ) -> AsyncGenerator[AnyEvent, None]:
+            received[session_id] = inject_directive
+            await asyncio.sleep(0.05)
+            if False:
+                yield  # pragma: no cover
+
+    sm = SessionManager(db_path=str(initialized_db), langgraph=RecordingProtocol())
+    d1 = InjectCloseAfterDirective(n=2)
+    d2 = InjectErrorDirective()
+
+    await sm.start_session(session_id="iso-1", query="q1", inject_directive=d1)
+    await sm.start_session(session_id="iso-2", query="q2", inject_directive=d2)
+
+    tasks = []
+    if "iso-1" in sm.active_runs:
+        tasks.append(sm.active_runs["iso-1"])
+    if "iso-2" in sm.active_runs:
+        tasks.append(sm.active_runs["iso-2"])
+
+    if tasks:
+        done, _ = await asyncio.wait(tasks, timeout=2.0)
+        for t in done:
+            with contextlib.suppress(Exception):
+                t.result()
+
+    await asyncio.sleep(0.1)
+
+    assert received.get("iso-1") is d1
+    assert received.get("iso-2") is d2
+
+
+# ---------------------------------------------------------------------------
 # T3 (updated) — POST /api/research/start router integration
-#
-# T3 v2.3: body changed from {session_id} to {query}, session_id generated by backend ULID.
 # ---------------------------------------------------------------------------
 
 

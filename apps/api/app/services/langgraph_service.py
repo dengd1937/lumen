@@ -258,7 +258,17 @@ class LangGraphService:
     ) -> AsyncGenerator[AnyEvent, None]:
         """Drive the three-node graph and route StreamEvents to lumen AnyEvents.
 
-        inject_directive is accepted for interface parity (T6 will use it).
+        T6 (ADR-0003 D12): wraps the graph loop in try/except so any node
+        exception (RuntimeError, TimeoutError, etc.) is converted to an
+        ErrorEvent and the generator returns cleanly without raising.
+
+        asyncio.CancelledError inherits BaseException and is NOT caught by
+        ``except Exception`` — it propagates naturally so the producer task
+        can be cancelled externally (D8.4 cancellation path).
+
+        inject_directive is accepted and forwarded; T11/T12 will implement
+        InjectCloseAfterDirective and InjectErrorDirective behaviour.
+        T6 phase: signature accepted, downstream behaviour is no-op.
         """
         config: RunnableConfig = {"configurable": {"thread_id": session_id}}
         initial_state: GraphState = {
@@ -268,12 +278,26 @@ class LangGraphService:
             "report_chunks": [],
         }
         emitted_done = False
-        async for raw in self._graph.astream_events(initial_state, config=config, version="v2"):
-            ev = route_stream_event(dict(raw), session_id=session_id)
-            if ev is not None:
-                if ev.type == "done":
-                    emitted_done = True
-                yield ev
+        try:
+            async for raw in self._graph.astream_events(initial_state, config=config, version="v2"):
+                ev = route_stream_event(dict(raw), session_id=session_id)
+                if ev is not None:
+                    if ev.type == "done":
+                        emitted_done = True
+                    yield ev
+        except Exception as e:
+            # Covers RuntimeError, TimeoutError (asyncio.TimeoutError is a
+            # subclass of TimeoutError since Python 3.11, which is a subclass
+            # of Exception).  CancelledError is a BaseException subclass and
+            # is intentionally NOT caught here — let it propagate.
+            yield ErrorEvent(
+                event_id=_new_event_id(),
+                session_id=session_id,
+                timestamp=_now_iso(),
+                type="error",
+                message=f"LangGraph error: {type(e).__name__}",
+            )
+            return  # generator exits cleanly; SessionManager senses ev.type=="error"
 
         if not emitted_done:
             # Fallback: graph terminal state routing miss → explicit DoneEvent

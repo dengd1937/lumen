@@ -32,6 +32,7 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 
+from app.services.inject_directive import InjectDirective
 from app.services.langgraph_service import LangGraphStub
 from app.services.session_manager import SessionManager
 
@@ -227,9 +228,19 @@ class _CountingManager(SessionManager):
         super().__init__(db_path=db_path, langgraph=langgraph)
         self.start_call_count = 0
 
-    async def start_session(self, *, session_id: str, query: str) -> None:
+    async def start_session(
+        self,
+        *,
+        session_id: str,
+        query: str,
+        inject_directive: InjectDirective | None = None,
+    ) -> None:
         self.start_call_count += 1
-        await super().start_session(session_id=session_id, query=query)
+        await super().start_session(
+            session_id=session_id,
+            query=query,
+            inject_directive=inject_directive,
+        )
 
 
 async def test_stream_does_not_spawn_second_producer(
