@@ -147,6 +147,21 @@ curl -N http://localhost:8000/api/research/<session_id>/stream
 | `DASHSCOPE_BASE_URL` | DashScope OpenAI-compatible endpoint | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
 | `LLM_MODEL` | 使用的大模型标识符 | `qwen-max` |
 
+### Release Checklist
+
+发布前必跑（本地）：
+
+```bash
+# 1. 默认 CI 测试（FakeListChatModel，3-5s）
+cd apps/api && uv run pytest
+
+# 2. 真实 DashScope smoke（≤10 分钟，需 op inject 真实 key）
+cd apps/api && uv run pytest -m release_smoke
+```
+
+`release_smoke` 标记的测试在 CI 默认 `addopts` 中通过 `-m 'not release_smoke'` 排除，不会消耗 DashScope 配额。
+本地 release 前必须显式运行验证 `init_chat_model` / `StateGraph.compile()` / `astream_events(version="v2")` 真实路径。
+
 ---
 
 ## 技术栈
