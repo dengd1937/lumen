@@ -42,5 +42,20 @@ class Settings(BaseSettings):
     DASHSCOPE_API_KEY: SecretStr
     LUMEN_DB_PATH: str
 
+    DASHSCOPE_BASE_URL: str  # D11 - required, no default; DashScope OpenAI-compatible endpoint
+
+    # T0 spike verified: langgraph 1.1.8 + langchain-core 1.3.0 + langchain-openai 1.1.14 compatible
+    # (174 StreamEvent samples in fixture). Actual version langgraph 1.x
+    # (ADR-0003 SDec-1 wrote >=0.3,<0.4, T0 spike verified 1.x API compatible).
+    LLM_MODEL: str = "qwen-max"  # D11 - optional default; R-M1A-2 fallback supports qwen-plus
+
+    # v2.1 D-TM dual guard #1. Never enable in production.
+    TESTING_MODE: bool = False  # D-TM - disabled by default; e2e webServer env sets true
+
+    # v2.1 D-TM dual guard #2. SecretStr prevents repr leak.
+    TESTING_TOKEN: SecretStr | None = (
+        None  # D-TM - default None; works with TESTING_MODE as dual guard
+    )
+
     # Optional — default to "mock" so dev runs without a backend process.
     DATA_SOURCE: Literal["mock", "sse"] = "mock"

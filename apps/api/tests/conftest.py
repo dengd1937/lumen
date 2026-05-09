@@ -25,6 +25,11 @@ def env_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[Pa
     db_path = tmp_path / "test_lumen.db"
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-conftest-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", str(db_path))
+    # T1 v2.3 - add 4 new fields so other test modules can obtain Settings consistently
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.setenv("LLM_MODEL", "qwen-max")
+    monkeypatch.setenv("TESTING_MODE", "true")  # plan v2.1 conftest convention
+    monkeypatch.setenv("TESTING_TOKEN", "test-token-fixture-secret")
     get_settings.cache_clear()
     yield db_path
     get_settings.cache_clear()
