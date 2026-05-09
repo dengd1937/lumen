@@ -1,11 +1,17 @@
 """SSE wire format primitives + session stream generator.
 
-Per ADR-0002 D8.1 + Codex C1: every SSE frame is three explicit lines
-plus a trailing blank line. The `id:` line carries the event identifier
-that browser EventSource auto-reconnect uses to populate the
+Per ADR-0002 D8.1 + Codex C1: business SSE frames are three explicit
+lines plus a trailing blank line. The `id:` line carries the event
+identifier that browser EventSource auto-reconnect uses to populate the
 `Last-Event-ID` request header — putting the identifier ONLY in the
 JSON `data` payload would silently break replay because the browser
 never inspects the JSON for reconnect cursor.
+
+T7B D-HB fix (Codex HIGH #2): heartbeat frames intentionally omit the
+`id:` line so browser EventSource does NOT update lastEventId on receipt.
+This preserves the most-recent business event id as the replay cursor;
+`heartbeat-*` synthetic ids are never persisted to audit_log and would
+cause a 400 on lookup_seq_by_event_id if used as Last-Event-ID.
 
 Wire serialization invariants (per T4 reviewer HIGH + cross-language
 contract with apps/web/src/types/research-events.ts):
@@ -74,17 +80,20 @@ def format_sse(event: BaseEvent) -> bytes:
 def format_heartbeat(server_time: str) -> bytes:
     """Serialize a heartbeat to a W3C SSE frame.
 
-    Heartbeat needs an `id:` line so the browser does NOT reset its
-    internal lastEventId on receipt (per W3C SSE spec, a frame without
-    `id:` clears the lastEventId on the reader). The value is the
-    synthetic `heartbeat-<server_time>` — heartbeats are NEVER persisted
-    to audit_log (per ADR-0002 D8.5), so this id never appears in the
-    replay cursor space.
+    T7B D-HB (v2): heartbeat frame omits the `id:` line per W3C SSE spec
+    (https://html.spec.whatwg.org/multipage/server-sent-events.html).
+    A frame without `id:` does NOT update EventSource.lastEventId on the
+    browser side; this is the desired behavior so heartbeats don't pollute
+    the replay cursor with synthetic `heartbeat-*` values that would 400
+    on lookup_seq_by_event_id (Codex HIGH #2 — M1.0 hidden bug fix).
+
+    Heartbeats are NEVER persisted to audit_log (ADR-0002 D8.5) because
+    they are wire-only liveness signals.
     """
     _assert_no_newline(server_time, "server_time")
     hb = HeartbeatEvent(type="heartbeat", server_time=server_time)
     payload_json = hb.model_dump_json(exclude_none=True)
-    return (f"id: heartbeat-{server_time}\nevent: heartbeat\ndata: {payload_json}\n\n").encode()
+    return (f"event: heartbeat\ndata: {payload_json}\n\n").encode()
 
 
 def make_heartbeat() -> HeartbeatEvent:
@@ -95,8 +104,9 @@ def make_heartbeat() -> HeartbeatEvent:
 
     `timespec="microseconds"` is explicit (rather than relying on the
     default which depends on whether the datetime carries microseconds)
-    so the wire format `heartbeat-<server_time>` is regex-stable for
-    consumers that match against it."""
+    so the JSON payload's server_time field has a stable format for
+    debugging and log correlation (heartbeat is no longer in the SSE
+    id: line per T7B D-HB)."""
     server_time = datetime.now(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
     return HeartbeatEvent(type="heartbeat", server_time=server_time)
 

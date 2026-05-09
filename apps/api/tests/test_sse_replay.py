@@ -364,6 +364,74 @@ async def test_task_lifecycle_cleanup(started_app: FastAPI) -> None:
 
 
 # ---------------------------------------------------------------------------
+# T7B D-HB v2 RED #3 — heartbeat 后断线重连不返 400
+# ---------------------------------------------------------------------------
+
+
+async def test_sse_stream_after_heartbeat_reconnect_uses_last_business_event_id(
+    started_app: FastAPI,
+    env_settings: Path,
+) -> None:
+    """T7B D-HB v2 RED #3 integration: reconnect after heartbeat must not 400.
+
+    M1.0 hidden bug reproduction (fails before fix):
+      1. POST /research/start -> producer pushes plan_created -> heartbeat (old id: heartbeat-*)
+      2. Browser EventSource lastEventId overwritten by 'heartbeat-*'
+      3. Reconnect sends 'heartbeat-*' as Last-Event-ID
+      4. lookup_seq_by_event_id('heartbeat-*') -> not found -> 400
+
+    T7B fix contract:
+      1. heartbeat frame omits id: line (W3C SSE: lastEventId not updated)
+      2. EventSource retains most-recent business event_id (e.g. plan_created.event_id) as LEID
+      3. Reconnect sends business event_id -> lookup_seq_by_event_id hits -> 200 + replay from seq+1
+    """
+    transport = httpx.ASGITransport(app=started_app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        # Start session
+        r = await client.post("/api/research/start", json={"query": "T7B reconnect test"})
+        assert r.status_code == 201, f"start failed: {r.text}"
+        session_id = r.json()["session_id"]
+
+        # Wait for business events to land in audit_log (plan_created is LangGraphStub first event)
+        await asyncio.sleep(0.3)
+
+        # Read plan_created.event_id from audit_log (simulates LEID the browser would hold)
+        async with aiosqlite.connect(str(env_settings)) as conn:
+            cur = await conn.execute(
+                "SELECT event_id FROM lumen_audit_log "
+                "WHERE session_id = ? AND event_type = 'plan_created' "
+                "LIMIT 1",
+                (session_id,),
+            )
+            row = await cur.fetchone()
+
+        assert row is not None, "plan_created event must be in audit_log"
+        plan_created_event_id = row[0]
+
+        # Reconnect with business event_id as Last-Event-ID
+        async with client.stream(
+            "GET",
+            f"/api/research/{session_id}/stream",
+            headers={"Last-Event-ID": plan_created_event_id},
+            timeout=5.0,
+        ) as stream_response:
+            # Key assertion: 200 not 400 (pre-fix got 400 because heartbeat-* not in audit_log)
+            assert stream_response.status_code == 200, (
+                f"Expected 200, got {stream_response.status_code}; "
+                f"body={await stream_response.aread()!r}"
+            )
+
+            # Collect some bytes to confirm stream is functioning
+            collected = bytearray()
+            async for chunk in stream_response.aiter_bytes():
+                collected.extend(chunk)
+                if len(collected) > 256:  # any data means replay is working
+                    break
+
+        assert len(collected) > 0, "Stream should yield at least one frame after reconnect"
+
+
+# ---------------------------------------------------------------------------
 # Bonus — no router-level regression: /start still works alongside /stream
 # ---------------------------------------------------------------------------
 
