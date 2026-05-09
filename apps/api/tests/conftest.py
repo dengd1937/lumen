@@ -34,7 +34,13 @@ def env_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[Pa
 
     Yields the temp DB path so tests can introspect the file directly
     after lifespan has run init_db.
+
+    H3: also clears _load_demo_session lru_cache on setup and teardown so
+    per-test monkeypatching of _DEMO_FIXTURE_PATH is honored (otherwise the
+    lru_cache returns a stale fixture from a prior test).
     """
+    from app.routers.research import _load_demo_session
+
     db_path = tmp_path / "test_lumen.db"
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-conftest-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", str(db_path))
@@ -44,8 +50,10 @@ def env_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[Pa
     monkeypatch.setenv("TESTING_MODE", "true")  # plan v2.1 conftest convention
     monkeypatch.setenv("TESTING_TOKEN", "test-token-fixture-secret")
     get_settings.cache_clear()
+    _load_demo_session.cache_clear()
     yield db_path
     get_settings.cache_clear()
+    _load_demo_session.cache_clear()
 
 
 @pytest_asyncio.fixture
