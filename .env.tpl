@@ -6,6 +6,8 @@
 #
 # 必填变量
 DASHSCOPE_API_KEY=op://lumen/dashscope/api-key
+DASHSCOPE_BASE_URL=op://lumen/dashscope/base-url
+LLM_MODEL=qwen-max
 LUMEN_DB_PATH=./lumen.db
 NEXT_PUBLIC_LUMEN_DATA_SOURCE=mock
 

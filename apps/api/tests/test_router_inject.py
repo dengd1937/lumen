@@ -46,7 +46,9 @@ def clear_inject_cache() -> Iterator[None]:
     research_mod._IDEMPOTENCY_LOCKS.clear()
 
 
-def _make_settings(tmp_path: Path, *, testing_mode: bool = True, testing_token: str | None = "secret-token") -> Settings:
+def _make_settings(
+    tmp_path: Path, *, testing_mode: bool = True, testing_token: str | None = "secret-token"
+) -> Settings:
     """Helper: construct Settings without .env file lookup."""
     return Settings(
         _env_file=None,
@@ -407,4 +409,112 @@ async def test_start_session_without_token_prefix_literal_in_db(
     stored = row[0] if row else None
     assert stored == original_query, (
         f"Without test token, DB should store original query, got: {stored!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# T12a RED — start_session forwards directive to session_manager
+# ---------------------------------------------------------------------------
+
+
+def test_post_start_forwards_inject_error_directive_to_session_manager(
+    env_settings: Path,
+) -> None:
+    """T12a RED: POST /start with __inject_error__ prefix + test token calls
+    session_manager.start_session(inject_directive=InjectErrorDirective())."""
+    from unittest.mock import AsyncMock, patch
+
+    from main import app
+
+    with (
+        TestClient(app) as client,
+        patch.object(
+            app.state.session_manager,
+            "start_session",
+            new_callable=AsyncMock,
+        ) as mock_start,
+    ):
+        r = client.post(
+            "/api/research/start",
+            json={"query": "__inject_error__real query"},
+            headers={"X-Lumen-Test-Token": "test-token-fixture-secret"},
+        )
+
+    assert r.status_code == 201
+    assert mock_start.called, "session_manager.start_session should have been called"
+    call_kwargs = mock_start.call_args.kwargs
+    assert "inject_directive" in call_kwargs, (
+        f"inject_directive kwarg missing; call_kwargs={call_kwargs}"
+    )
+    assert isinstance(call_kwargs["inject_directive"], InjectErrorDirective), (
+        f"Expected InjectErrorDirective, got {call_kwargs['inject_directive']!r}"
+    )
+
+
+def test_post_start_forwards_inject_close_after_directive_to_session_manager(
+    env_settings: Path,
+) -> None:
+    """T12a RED: POST /start with __inject_close_after:3__ prefix + test token calls
+    session_manager.start_session(inject_directive=InjectCloseAfterDirective(n=3))."""
+    from unittest.mock import AsyncMock, patch
+
+    from main import app
+
+    with (
+        TestClient(app) as client,
+        patch.object(
+            app.state.session_manager,
+            "start_session",
+            new_callable=AsyncMock,
+        ) as mock_start,
+    ):
+        r = client.post(
+            "/api/research/start",
+            json={"query": "__inject_close_after:3__real query"},
+            headers={"X-Lumen-Test-Token": "test-token-fixture-secret"},
+        )
+
+    assert r.status_code == 201
+    assert mock_start.called, "session_manager.start_session should have been called"
+    call_kwargs = mock_start.call_args.kwargs
+    assert "inject_directive" in call_kwargs, (
+        f"inject_directive kwarg missing; call_kwargs={call_kwargs}"
+    )
+    assert isinstance(call_kwargs["inject_directive"], InjectCloseAfterDirective), (
+        f"Expected InjectCloseAfterDirective, got {call_kwargs['inject_directive']!r}"
+    )
+    assert call_kwargs["inject_directive"].n == 3
+
+
+def test_post_start_forwards_none_when_no_test_request(
+    env_settings: Path,
+) -> None:
+    """T12a RED: POST /start without X-Lumen-Test-Token header calls
+    session_manager.start_session(inject_directive=None)."""
+    from unittest.mock import AsyncMock, patch
+
+    from main import app
+
+    with (
+        TestClient(app) as client,
+        patch.object(
+            app.state.session_manager,
+            "start_session",
+            new_callable=AsyncMock,
+        ) as mock_start,
+    ):
+        r = client.post(
+            "/api/research/start",
+            json={"query": "__inject_error__prefixed but no token"},
+            # deliberately omit X-Lumen-Test-Token
+        )
+
+    assert r.status_code == 201
+    assert mock_start.called
+    call_kwargs = mock_start.call_args.kwargs
+    assert "inject_directive" in call_kwargs, (
+        f"inject_directive kwarg missing; call_kwargs={call_kwargs}"
+    )
+    assert call_kwargs["inject_directive"] is None, (
+        f"Without test token, inject_directive must be None, got: {call_kwargs['inject_directive']!r}"
     )

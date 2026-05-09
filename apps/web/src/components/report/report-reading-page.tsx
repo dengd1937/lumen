@@ -35,10 +35,15 @@ function ReportReadingPageContent() {
   // (current `??` collapse silently drops kbError when reportError fires
   // — fine while skeleton has no error UI, but masks debug info once
   // T13 renders an actual error message).
-  const isLoading = reportLoading || kbLoading;
   const error = reportError ?? kbError;
 
-  if (isLoading || error || !report) {
+  // error UI 分支 — 优先于 Skeleton（error 是终态，不应继续 loading）
+  if (error) {
+    return <ReportReadingError message={error.message} />;
+  }
+
+  const isLoading = reportLoading || kbLoading;
+  if (isLoading || !report) {
     return <ReportReadingSkeleton />;
   }
 
@@ -81,6 +86,37 @@ function ReportReadingPageContent() {
         </div>
       </main>
     </TooltipProvider>
+  );
+}
+
+/**
+ * Error UI shown when useReportData or useKbData enters a terminal error
+ * state (e.g. backend emits an ErrorEvent over the SSE channel). This is
+ * a final state — the page does not retry or continue loading.
+ * data-state="error" mirrors data-state="loading" on ReportReadingSkeleton
+ * for SR / test query symmetry.
+ */
+function ReportReadingError({ message }: { message: string }) {
+  return (
+    <main
+      data-testid="p3-root"
+      data-state="error"
+      className="bg-bg text-fg min-h-screen flex flex-col"
+    >
+      <ReportTopBar />
+      <div className="flex-1 flex items-center justify-center p-12">
+        <div
+          data-testid="p3-error"
+          role="alert"
+          className="max-w-lg space-y-3 text-center"
+        >
+          <p className="text-fg text-lg font-semibold">研究执行出错</p>
+          <p data-testid="p3-error-message" className="text-fg-muted text-sm">
+            {message}
+          </p>
+        </div>
+      </div>
+    </main>
   );
 }
 

@@ -9,14 +9,12 @@ replaces this with the real LangGraph fork via the same
 Default sequence: 4 business events (plan_created → node_started →
 node_progress → node_completed). With `emit_full_cycle=True`, two more
 events (report_chunk → done) are appended so SSE-4 e2e specs see a
-terminal `done` event. With `inject_error=True`, an `error` event is
-appended (used by the SSE-3 e2e spec).
+terminal `done` event.
 
 Construction toggles:
   * fail_at         — index at which to raise RuntimeError.
   * slow_seconds    — inter-event delay (default 0.1s).
   * emit_full_cycle — append report_chunk + done at end.
-  * inject_error    — append an error event at end (T15 SSE-3).
 
 T4 additions (ADR-0003 D11 + NN1):
   * LangGraphStub.astream_events extended with query + inject_directive
@@ -34,7 +32,6 @@ T5 additions (ADR-0003 D10.1):
 from __future__ import annotations
 
 import asyncio
-import os
 from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING
 
@@ -57,7 +54,7 @@ from app.services.graph.researcher import researcher_node_factory
 from app.services.graph.routing import route_stream_event
 from app.services.graph.state import GraphState
 from app.services.graph.writer import writer_node_factory
-from app.services.inject_directive import InjectDirective
+from app.services.inject_directive import InjectDirective, InjectErrorDirective
 
 if TYPE_CHECKING:
     from langchain_core.language_models import BaseChatModel
@@ -65,6 +62,17 @@ if TYPE_CHECKING:
     from langgraph.graph.state import CompiledStateGraph
 
     from app.core.config import Settings
+
+
+def _make_inject_error_event(session_id: str) -> ErrorEvent:
+    """T12a: producer-side error injection (InjectErrorDirective path)."""
+    return ErrorEvent(
+        event_id=_new_event_id(),
+        session_id=session_id,
+        timestamp=_now_iso(),
+        type="error",
+        message="Research failed: internal test error",
+    )
 
 
 class LangGraphStub:
@@ -78,10 +86,6 @@ class LangGraphStub:
         end so SSE consumers see the terminal `done` event (T15 SSE-4).
         Default False so existing T9/T10 tests keep their 4-event
         invariant.
-      * `inject_error` — append an `error` event at end of the
-        sequence (T15 SSE-3 — surfaces error UI in the frontend).
-        Reads `LUMEN_STUB_INJECT_ERROR` env var as a fallback so e2e
-        runners can flip the toggle without rewiring the manager.
     """
 
     def __init__(
@@ -90,15 +94,10 @@ class LangGraphStub:
         fail_at: int | None = None,
         slow_seconds: float = 0.1,
         emit_full_cycle: bool = False,
-        inject_error: bool | None = None,
     ) -> None:
         self._fail_at = fail_at
         self._delay = slow_seconds
         self._emit_full_cycle = emit_full_cycle
-        # Env fallback: agree with the runbook contract so a single
-        # uvicorn invocation in the e2e webServer can toggle this.
-        env_flag = os.environ.get("LUMEN_STUB_INJECT_ERROR") == "1"
-        self._inject_error = env_flag if inject_error is None else inject_error
 
     async def astream_events(
         self,
@@ -110,8 +109,14 @@ class LangGraphStub:
         """Stream fixed events (stub).
 
         NN1: accepts query and inject_directive to match LangGraphProtocol
-        signature; both are ignored -- stub uses a fixed event sequence.
+        signature; query is ignored -- stub uses a fixed event sequence.
+
+        T12a: InjectErrorDirective yields a single ErrorEvent then exits
+        immediately (producer-side error injection, before fixed sequence).
         """
+        if isinstance(inject_directive, InjectErrorDirective):
+            yield _make_inject_error_event(session_id)
+            return
         events = self._build_events(session_id)
         for i, ev in enumerate(events):
             if self._fail_at == i:
@@ -175,16 +180,6 @@ class LangGraphStub:
                         report_id="rpt-stub-001",
                     ),
                 ],
-            )
-        if self._inject_error:
-            events.append(
-                ErrorEvent(
-                    event_id=_new_event_id(),
-                    session_id=session_id,
-                    timestamp=ts,
-                    type="error",
-                    message="Stub-injected error for SSE-3 verification",
-                ),
             )
         return events
 
@@ -266,10 +261,12 @@ class LangGraphService:
         ``except Exception`` — it propagates naturally so the producer task
         can be cancelled externally (D8.4 cancellation path).
 
-        inject_directive is accepted and forwarded; T11/T12 will implement
-        InjectCloseAfterDirective and InjectErrorDirective behaviour.
-        T6 phase: signature accepted, downstream behaviour is no-op.
+        T12a: InjectErrorDirective yields a single ErrorEvent then exits
+        immediately (producer-side error injection, before the graph loop).
         """
+        if isinstance(inject_directive, InjectErrorDirective):
+            yield _make_inject_error_event(session_id)
+            return  # generator exits cleanly; SessionManager senses ev.type=="error"
         config: RunnableConfig = {"configurable": {"thread_id": session_id}}
         initial_state: GraphState = {
             "query": query,

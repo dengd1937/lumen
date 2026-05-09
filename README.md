@@ -91,6 +91,64 @@ curl -N http://localhost:8000/api/research/demo-001/stream
 
 ---
 
+## Demo Runbook (M1.A)
+
+M1.A 真实 LangGraph 接入验证流程。后端由 LangGraphStub 切换为三节点真实图（planner → researcher → writer），前端 P1 输入框完成与 API 的串联。
+
+> ⚠ **首次运行 M1.A 前必须删除旧 DB**：M1.A schema 相比 M1.0 已演化，直接复用旧文件会导致迁移错误。
+
+```bash
+# 0. 删除旧 DB（schema 已演化，必须重建）
+rm -f apps/api/lumen.db
+
+# 1. 注入密钥（1Password CLI）；.env.tpl 新增了 DASHSCOPE_BASE_URL + LLM_MODEL
+op inject -i .env.tpl -o apps/api/.env
+
+# 2. 同步依赖（M1.A 新增 langgraph、langchain-openai 等）
+cd apps/api
+uv sync
+
+# 3. 启动后端
+uv run uvicorn main:app --reload --workers 1 --port 8000
+
+# 4. 前端（另一个终端）
+cd apps/web
+pnpm install
+NEXT_PUBLIC_LUMEN_DATA_SOURCE=sse pnpm dev    # 切到 SSE 通道
+
+# 5. 验证 M1.A SSE 协议（真实 LangGraph，直连后端）
+#    普通请求：
+curl -X POST http://localhost:8000/api/research/start \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"什么是量子计算？"}'
+# 返回 {"session_id":"<id>"}，用该 id 监听流：
+curl -N http://localhost:8000/api/research/<session_id>/stream
+
+# 6. 浏览器访问前端（P1 输入框已串联后端）
+#    http://localhost:3000/    — 在 P1 输入框输入问题并点击"开始研究"
+```
+
+> ⚠ **`--workers 1` 是硬约束**（ADR-0001 D5）：ChromaDB embedded + SQLite 在多 worker 下出现并发写争用；M1.A demo 单用户场景不受影响。
+
+### TESTING_MODE / TESTING_TOKEN 安全说明
+
+`LUMEN_TESTING_MODE` 和 `LUMEN_TESTING_TOKEN` 是**测试 backdoor**，**生产环境严禁开启**：
+
+- 两个变量**不在** `.env.tpl` 中，防止误配置到生产。
+- 仅 Playwright e2e webServer 内部通过环境变量注入，外部永远关闭。
+- `__inject_close_after:N__` / `__inject_error__` 前缀是测试专用 query prefix，需配合 `X-Lumen-Test-Token` header 和双重 guard（TESTING_MODE=true + token 匹配）才能激活；单独发送前缀在生产环境完全无效（被当普通 query 处理）。
+
+### M1.A 配置说明
+
+`.env.tpl` 相比 M1.0 新增两项必填变量：
+
+| 变量 | 说明 | 示例 |
+|---|---|---|
+| `DASHSCOPE_BASE_URL` | DashScope OpenAI-compatible endpoint | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| `LLM_MODEL` | 使用的大模型标识符 | `qwen-max` |
+
+---
+
 ## 技术栈
 
 | 层 | 选型 | 来源 |
