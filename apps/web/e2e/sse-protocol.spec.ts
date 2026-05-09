@@ -34,21 +34,20 @@ import { expect, test } from "@playwright/test";
 
 const API_BASE = "http://localhost:8000";
 
-// Each test gets a unique session_id so the producer-lock doesn't
-// 409 across tests.
-function newSessionId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
+// T9: POST {query, client_request_id} → 解析 session_id from response
+// newSessionId 已废弃，由 startSession 返回 session_id 替代。
 async function startSession(
   request: import("@playwright/test").APIRequestContext,
-  sessionId: string,
-): Promise<void> {
+  query: string,
+): Promise<string> {
+  const clientRequestId = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const r = await request.post(`${API_BASE}/api/research/start`, {
-    data: { session_id: sessionId },
+    data: { query, client_request_id: clientRequestId },
     headers: { "Content-Type": "application/json" },
   });
-  expect(r.status(), `POST /start should be 201 for ${sessionId}`).toBe(201);
+  expect(r.status(), `POST /start should be 201 for query "${query}"`).toBe(201);
+  const body: { session_id: string } = await r.json();
+  return body.session_id;
 }
 
 // ---------------------------------------------------------------------------
@@ -59,8 +58,7 @@ test("@sse SSE-1: plan_created -> node_started -> node_progress -> node_complete
   page,
   request,
 }) => {
-  const sessionId = newSessionId("sse1");
-  await startSession(request, sessionId);
+  const sessionId = await startSession(request, "M1.A SSE-1 event-order 测试查询");
 
   await page.goto(`/research/${sessionId}`);
 
@@ -93,8 +91,7 @@ test("@sse SSE-4: report_chunk + done renders the report content", async ({
   page,
   request,
 }) => {
-  const sessionId = newSessionId("sse4");
-  await startSession(request, sessionId);
+  const sessionId = await startSession(request, "M1.A SSE-4 report-chunk 测试查询");
 
   // Navigate directly to the report page so useReportData opens an SSE
   // channel; we then wait for the streamed markdown to render.
@@ -118,8 +115,7 @@ test("@sse SSE-5: three hooks each return non-loading state under sse channel", 
   page,
   request,
 }) => {
-  const sessionId = newSessionId("sse5");
-  await startSession(request, sessionId);
+  const sessionId = await startSession(request, "M1.A SSE-5 three-hook 测试查询");
 
   await page.goto(`/research/${sessionId}`);
 
