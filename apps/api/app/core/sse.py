@@ -41,6 +41,7 @@ import aiosqlite
 
 from app.db.sqlite import configure_connection, read_after
 from app.models.events import BaseEvent, HeartbeatEvent
+from app.services.inject_directive import InjectCloseAfterDirective, InjectDirective
 
 _TERMINAL_STATES: frozenset[str] = frozenset({"completed", "failed", "cancelled"})
 _STREAM_QUEUE_MAXSIZE: int = 256
@@ -135,6 +136,7 @@ async def stream_session(
     heartbeat_interval: float = 15.0,
     poll_interval: float = 0.05,
     terminal_grace_seconds: float = 0.2,
+    inject_directive: InjectDirective | None = None,
 ) -> AsyncGenerator[bytes, None]:
     """Yield W3C SSE byte-frames for a session.
 
@@ -143,6 +145,11 @@ async def stream_session(
     Phase 2 (live): heartbeat task + audit_log poll task push frames
     into a queue; consumer yields them. Stops when the session reaches
     a terminal status AND no further rows arrive within the grace window.
+
+    T11 inject_directive: InjectCloseAfterDirective(n) counts business
+    frames (audit_log rows) across Phase 1 + Phase 2. When the count
+    reaches n, raises ConnectionResetError to simulate client disconnect.
+    Heartbeat frames are NOT counted. Producer path is unaffected.
 
     Cancellation safety: if the SSE consumer disconnects (response
     generator closed → CancelledError or GeneratorExit), the `finally`
@@ -155,6 +162,12 @@ async def stream_session(
     cleanup with cleaner exception semantics for ASGI streaming.
     """
     cursor_seq = last_seq
+    # T11: count business frames (audit_log rows). Heartbeats do NOT count.
+    yielded_business_count = 0
+    # Cache the close-after threshold once to avoid repeated isinstance checks.
+    close_after_n: int | None = (
+        inject_directive.n if isinstance(inject_directive, InjectCloseAfterDirective) else None
+    )
 
     # Phase 1 — replay
     async with aiosqlite.connect(db_path) as conn:
@@ -163,6 +176,11 @@ async def stream_session(
     for row in rows:
         cursor_seq = max(cursor_seq, int(row["seq"]))
         yield _row_to_frame(row)
+        yielded_business_count += 1
+        if close_after_n is not None and yielded_business_count >= close_after_n:
+            raise ConnectionResetError(
+                f"T11 inject_directive: close after {close_after_n} events"
+            )
 
     # Phase 2 — live (heartbeat + poller share a bounded queue so a slow
     # ASGI consumer cannot accumulate unbounded memory). On QueueFull,
@@ -192,6 +210,13 @@ async def stream_session(
                 # poll_loop signals terminal+drained.
                 break
             yield frame
+            # T11: heartbeat frames start with "event: heartbeat\n"; don't count them.
+            if not frame.startswith(b"event: heartbeat\n"):
+                yielded_business_count += 1
+                if close_after_n is not None and yielded_business_count >= close_after_n:
+                    raise ConnectionResetError(
+                        f"T11 inject_directive: close after {close_after_n} events"
+                    )
     finally:
         for task in (poll_task, heartbeat_task):
             task.cancel()
