@@ -45,8 +45,11 @@ htmlcov/
 .uv-cache/
 
 # Lumen runtime data (per ADR-0001 D5: ChromaDB embedded + SQLite)
-apps/api/data/
+# Note: per git rules, "!exception" inside an ignored directory has no effect.
+# We enumerate ignored patterns explicitly so whitelisted files can be tracked.
+apps/api/data/*
 !apps/api/data/.gitkeep
+!apps/api/data/demo_session.json
 
 # SQLite test/runtime artifacts (T15 e2e + diagnostic runs leave these
 # in apps/api/; the production lumen.db lives in data/ above).

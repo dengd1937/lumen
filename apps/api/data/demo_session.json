@@ -1,0 +1,46 @@
+{
+  "session_id": "01HZD9DEMOREPLAY0000000000",
+  "query": "AI 在医疗领域的应用前景（合成 demo fixture）",
+  "events": [
+    {
+      "event_id": "evt_demo_001",
+      "session_id": "01HZD9DEMOREPLAY0000000000",
+      "timestamp": "2026-05-09T00:00:00.000000Z",
+      "type": "plan_created",
+      "nodes": [
+        {"id": "web-1", "title": "公开 Web 检索", "track": "web"},
+        {"id": "kb-1", "title": "私有 KB 检索", "track": "kb"}
+      ]
+    },
+    {
+      "event_id": "evt_demo_002",
+      "session_id": "01HZD9DEMOREPLAY0000000000",
+      "timestamp": "2026-05-09T00:00:00.100000Z",
+      "type": "node_started",
+      "node_id": "web-1",
+      "track": "web"
+    },
+    {
+      "event_id": "evt_demo_003",
+      "session_id": "01HZD9DEMOREPLAY0000000000",
+      "timestamp": "2026-05-09T00:00:00.200000Z",
+      "type": "node_completed",
+      "node_id": "web-1",
+      "sources": []
+    },
+    {
+      "event_id": "evt_demo_004",
+      "session_id": "01HZD9DEMOREPLAY0000000000",
+      "timestamp": "2026-05-09T00:00:00.300000Z",
+      "type": "report_chunk",
+      "content": "## 演示报告（合成 fixture）\n\n本节为 M1.A Demo Day replay 兜底数据，由 T13b prerender 脚本在 release 前替换为真实 LangGraph 输出。"
+    },
+    {
+      "event_id": "evt_demo_005",
+      "session_id": "01HZD9DEMOREPLAY0000000000",
+      "timestamp": "2026-05-09T00:00:00.400000Z",
+      "type": "done",
+      "report_id": "rpt-demo-replay"
+    }
+  ]
+}

@@ -63,3 +63,12 @@ class Settings(BaseSettings):
 
     # Optional — default to "mock" so dev runs without a backend process.
     DATA_SOURCE: Literal["mock", "sse"] = "mock"
+
+    # T13 — Demo replay safeguards (ADR-0001 D6 L3)
+    # Default: only Demo Day production origin allowed; production with no
+    # origin/token/TESTING_MODE → 403. Add demo origins as allowlist entries.
+    # env override: DEMO_ALLOWED_ORIGINS='["https://a.com","https://b.com"]'
+    DEMO_ALLOWED_ORIGINS: tuple[str, ...] = ("https://demo.lumen.app",)
+    # DEMO_REPLAY_TOKEN: when set, request header `X-Lumen-Demo-Token` matching
+    # this value bypasses origin allowlist. Default None (no token route).
+    DEMO_REPLAY_TOKEN: SecretStr | None = None
