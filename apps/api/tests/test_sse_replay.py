@@ -40,16 +40,40 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest_asyncio.fixture
-async def started_app(env_settings: Path) -> AsyncIterator[FastAPI]:
+async def started_app(
+    env_settings: Path, monkeypatch: pytest.MonkeyPatch
+) -> AsyncIterator[FastAPI]:
     """Spin up the real FastAPI lifespan so app.state.session_manager is
     created in the test's event loop. We deliberately avoid TestClient
     here — its synchronous wrapper runs lifespan on a separate thread and
     breaks `app.state.session_manager.active_runs` introspection from
     inside async test bodies.
+
+    M1.A T7 update: monkeypatch init_chat_model so lifespan can build
+    LangGraphService without a real DashScope connection. After lifespan
+    startup, replace app.state.session_manager with a LangGraphStub-backed
+    instance to preserve the fixed 4-event sequence these replay tests rely on.
     """
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    monkeypatch.setattr(
+        "app.services.langgraph_service.init_chat_model",
+        lambda **kwargs: FakeListChatModel(responses=[]),
+    )
     from main import app
 
     async with app.router.lifespan_context(app):
+        # T7: lifespan creates app.state.langgraph_service (LangGraphService) +
+        # app.state.session_manager (using that LangGraphService).
+        # We replace session_manager with one backed by LangGraphStub() to keep
+        # the M1.0 4-event invariant for SSE replay tests. The original lifespan
+        # SessionManager has no active_runs (replacement happens before yield),
+        # and orphaned app.state.langgraph_service has no lifecycle hook (no
+        # long-lived connections per ADR-0003 SDec-4) — no leak.
+        app.state.session_manager = SessionManager(
+            db_path=str(env_settings),
+            langgraph=LangGraphStub(),
+        )
         yield app
 
 
