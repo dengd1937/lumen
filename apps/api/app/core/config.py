@@ -57,5 +57,9 @@ class Settings(BaseSettings):
         None  # D-TM - default None; works with TESTING_MODE as dual guard
     )
 
+    # T7C: e2e webServer regression fix -- switch to LangGraphStub to avoid real DashScope
+    # Production MUST NOT enable; only for e2e webServer + local dev preview
+    LUMEN_USE_STUB: bool = False
+
     # Optional — default to "mock" so dev runs without a backend process.
     DATA_SOURCE: Literal["mock", "sse"] = "mock"
