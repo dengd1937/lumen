@@ -6,23 +6,20 @@ done_callback cleanup, and restart-after-terminal semantics.
 
 Stub LangGraph emits 4 fixed events with asyncio.sleep(0.1) interval
 so the test can simulate cancellation between events without race.
+
+Note: `initialized_db` fixture is now in conftest.py (shared with T3 tests).
 """
 
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncIterator
+import re
 from pathlib import Path
-from typing import cast
 
 import aiosqlite
 import pytest
-import pytest_asyncio
 from fastapi.testclient import TestClient
 
-from app.db.sqlite import (
-    init_db,
-)
 from app.models.events import (
     NodeCompletedEvent,
     NodeProgressEvent,
@@ -34,15 +31,6 @@ from app.services.session_manager import (
     SessionAlreadyRunningError,
     SessionManager,
 )
-
-
-@pytest_asyncio.fixture
-async def initialized_db(tmp_path: Path) -> AsyncIterator[Path]:
-    db_path = tmp_path / "test_t9.db"
-    async with aiosqlite.connect(str(db_path)) as conn:
-        await init_db(conn)
-    yield db_path
-
 
 # ---------------------------------------------------------------------------
 # RED — LangGraph stub event sequence
@@ -91,7 +79,7 @@ async def test_session_manager_start_creates_running_session(
 ) -> None:
     """RED 1 — start_session creates a row and marks it running."""
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub())
-    await sm.start_session("sess-1")
+    await sm.start_session(session_id="sess-1", query="test")
 
     # Status should be `running` immediately after start_session returns.
     async with aiosqlite.connect(str(initialized_db)) as c:
@@ -114,7 +102,7 @@ async def test_session_manager_completes_terminal_status(
     """After the producer task finishes naturally, status → completed
     and active_runs is cleaned up."""
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub())
-    await sm.start_session("sess-complete")
+    await sm.start_session(session_id="sess-complete", query="test")
     task = sm.active_runs["sess-complete"]
     await asyncio.wait_for(task, timeout=2.0)
     # Yield to the event loop so the done_callback finishes evicting active_runs.
@@ -136,9 +124,9 @@ async def test_session_manager_duplicate_session_raises_already_running(
     """RED 2 — second start_session with an active session raises
     SessionAlreadyRunningError; router maps to 409."""
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub())
-    await sm.start_session("sess-dup")
+    await sm.start_session(session_id="sess-dup", query="test")
     with pytest.raises(SessionAlreadyRunningError):
-        await sm.start_session("sess-dup")
+        await sm.start_session(session_id="sess-dup", query="test")
     # Drain task for clean teardown.
     await asyncio.wait_for(sm.active_runs["sess-dup"], timeout=2.0)
     await asyncio.sleep(0.05)
@@ -150,7 +138,7 @@ async def test_session_manager_task_exception_marks_failed(
     """Codex H1 / RED 4: producer task raises → status auto-updates to
     `failed` and active_runs is cleaned up."""
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub(fail_at=1))
-    await sm.start_session("sess-fail")
+    await sm.start_session(session_id="sess-fail", query="test")
     task = sm.active_runs["sess-fail"]
     with pytest.raises(RuntimeError):
         await asyncio.wait_for(task, timeout=2.0)
@@ -175,7 +163,7 @@ async def test_session_manager_restart_after_terminal_is_rejected(
     would be replayed alongside the new run). Same-id restart MUST
     raise SessionAlreadyRunningError; clients use a fresh session_id."""
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub())
-    await sm.start_session("sess-noredo")
+    await sm.start_session(session_id="sess-noredo", query="test")
     await asyncio.wait_for(sm.active_runs["sess-noredo"], timeout=2.0)
     await asyncio.sleep(0.1)
     # Confirm session is in completed state.
@@ -189,7 +177,7 @@ async def test_session_manager_restart_after_terminal_is_rejected(
 
     # Same id again — must raise (no back-edge in the state machine).
     with pytest.raises(SessionAlreadyRunningError):
-        await sm.start_session("sess-noredo")
+        await sm.start_session(session_id="sess-noredo", query="test")
 
 
 async def test_session_manager_cancel_marks_cancelled_and_cleans_up(
@@ -199,7 +187,7 @@ async def test_session_manager_cancel_marks_cancelled_and_cleans_up(
     + active_runs cleaned up. Simulates client disconnect."""
     # Stub with infinite delay so we can cancel mid-flight.
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub(slow_seconds=10.0))
-    await sm.start_session("sess-cancel")
+    await sm.start_session(session_id="sess-cancel", query="test")
     task = sm.active_runs["sess-cancel"]
     await asyncio.sleep(0.1)  # ensure task is mid-event
     task.cancel()
@@ -223,7 +211,7 @@ async def test_session_manager_persists_audit_log_for_each_event(
     """Producer task writes each event to audit_log (per ADR-0002 D8.3
     single-source protocol). T10 stream_session reads from this table."""
     sm = SessionManager(db_path=str(initialized_db), langgraph=LangGraphStub())
-    await sm.start_session("sess-audit")
+    await sm.start_session(session_id="sess-audit", query="test")
     await asyncio.wait_for(sm.active_runs["sess-audit"], timeout=2.0)
     await asyncio.sleep(0.1)
 
@@ -238,46 +226,54 @@ async def test_session_manager_persists_audit_log_for_each_event(
 
 
 # ---------------------------------------------------------------------------
-# RED — POST /api/research/start router integration
+# T3 (updated) — POST /api/research/start router integration
+#
+# T3 v2.3: body changed from {session_id} to {query}, session_id generated by backend ULID.
 # ---------------------------------------------------------------------------
 
 
+_ULID_RE = re.compile(r"^[0-9A-HJKMNP-TV-Z]{26}$")
+
+
 def test_post_start_returns_201_and_session_id(env_settings: Path) -> None:
-    """RED 1 — successful start returns 201 with session_id echo."""
+    """T3 updated — successful start returns 201 with server-generated ULID session_id."""
     from main import app
 
     with TestClient(app) as client:
-        r = client.post("/api/research/start", json={"session_id": "router-1"})
+        r = client.post("/api/research/start", json={"query": "router integration test"})
     assert r.status_code == 201
-    assert r.json()["session_id"] == "router-1"
+    data = r.json()
+    assert "session_id" in data
+    assert _ULID_RE.match(data["session_id"]), f"session_id not ULID format: {data['session_id']!r}"
 
 
 def test_post_start_duplicate_returns_409(env_settings: Path) -> None:
-    """RED 2 — second POST while first is still running returns 409."""
+    """T3 updated — 409 should NOT occur for normal flow (ULID generates unique ids).
+    Verify two rapid POSTs each return 201 with distinct session_ids."""
     from main import app
 
     with TestClient(app) as client:
-        r1 = client.post("/api/research/start", json={"session_id": "router-dup"})
+        r1 = client.post("/api/research/start", json={"query": "dup test query"})
         assert r1.status_code == 201
-        r2 = client.post("/api/research/start", json={"session_id": "router-dup"})
-    assert r2.status_code == 409
-    assert "already" in cast(str, r2.json().get("detail", "")).lower()
+        r2 = client.post("/api/research/start", json={"query": "dup test query"})
+        assert r2.status_code == 201
+    # Each POST generates a new ULID — they must differ
+    assert r1.json()["session_id"] != r2.json()["session_id"]
 
 
-def test_post_start_rejects_empty_session_id(env_settings: Path) -> None:
-    """Code-reviewer T9 MEDIUM: Pydantic min_length validation must
-    surface as 422, not a 500 from a downstream null/empty failure."""
+def test_post_start_rejects_empty_query(env_settings: Path) -> None:
+    """T3 (was: rejects_empty_session_id) — Pydantic min_length=1 on query → 422."""
     from main import app
 
     with TestClient(app) as client:
-        r = client.post("/api/research/start", json={"session_id": ""})
+        r = client.post("/api/research/start", json={"query": ""})
     assert r.status_code == 422
 
 
-def test_post_start_rejects_oversize_session_id(env_settings: Path) -> None:
-    """Code-reviewer T9 MEDIUM: max_length=64 boundary."""
+def test_post_start_rejects_oversize_query(env_settings: Path) -> None:
+    """T3 (was: rejects_oversize_session_id) — max_length=2000 on query → 422."""
     from main import app
 
     with TestClient(app) as client:
-        r = client.post("/api/research/start", json={"session_id": "x" * 65})
+        r = client.post("/api/research/start", json={"query": "x" * 2001})
     assert r.status_code == 422

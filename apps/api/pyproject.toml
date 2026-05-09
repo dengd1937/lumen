@@ -5,6 +5,7 @@ description = "Lumen Deep Research API — FastAPI + LangGraph backend"
 requires-python = ">=3.12"
 dependencies = [
     "aiosqlite>=0.22.1",
+    "cachetools>=7.1.1",
     "chromadb>=1.5.8",
     "dashscope>=1.25.17",
     "fastapi>=0.136.0",
@@ -17,6 +18,7 @@ dependencies = [
     "pydantic>=2.13.2",
     "pydantic-settings>=2.13.1",
     "python-ulid>=3.1.0",
+    "types-cachetools>=7.0.0.20260503",
     "uvicorn[standard]>=0.44.0",
 ]
 

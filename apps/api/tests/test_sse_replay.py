@@ -14,6 +14,9 @@ Per ADR-0002 D8.5 + plan T10 RED specs (6 tests):
 Tests use httpx.AsyncClient + ASGITransport for true streaming. Lifespan
 is run via the fixture (env_settings → started_app) so app.state.session_manager
 is initialized in the same event loop the test inspects.
+
+T3 update: POST body changed from {session_id} to {query}; session_id is now
+server-generated (ULID). Tests extract session_id from POST response.
 """
 
 from __future__ import annotations
@@ -101,9 +104,10 @@ async def test_stream_returns_event_stream_content_type(
     EventSource auto-promotes the connection to a stream channel."""
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "ct-1"})
+        r = await client.post("/api/research/start", json={"query": "content-type test"})
         assert r.status_code == 201
-        async with client.stream("GET", "/api/research/ct-1/stream") as resp:
+        session_id = r.json()["session_id"]
+        async with client.stream("GET", f"/api/research/{session_id}/stream") as resp:
             assert resp.status_code == 200
             content_type = resp.headers.get("content-type", "")
             assert content_type.startswith("text/event-stream"), content_type
@@ -123,8 +127,9 @@ async def test_stream_replays_missed_events_by_event_id(
     earlier events (plan_created at seq=1, node_started at seq=2)."""
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "replay-1"})
+        r = await client.post("/api/research/start", json={"query": "replay test query"})
         assert r.status_code == 201
+        session_id = r.json()["session_id"]
 
         # Wait long enough for the stub to flush all 4 events to audit_log
         # (4 events x 0.1s sleep + status transition margin).
@@ -133,7 +138,7 @@ async def test_stream_replays_missed_events_by_event_id(
         async with aiosqlite.connect(str(env_settings)) as conn:
             cur = await conn.execute(
                 "SELECT event_id FROM lumen_audit_log WHERE session_id = ? AND seq = ?",
-                ("replay-1", 2),
+                (session_id, 2),
             )
             row = await cur.fetchone()
         assert row is not None
@@ -141,7 +146,7 @@ async def test_stream_replays_missed_events_by_event_id(
 
         body = await _drain_stream(
             client,
-            "/api/research/replay-1/stream",
+            f"/api/research/{session_id}/stream",
             headers={"Last-Event-ID": last_event_id},
         )
 
@@ -168,11 +173,12 @@ async def test_stream_invalid_last_event_id_returns_400(
     Returning 400 forces the client to reset its cursor explicitly."""
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "bad-leid"})
+        r = await client.post("/api/research/start", json={"query": "bad leid test"})
         assert r.status_code == 201
+        session_id = r.json()["session_id"]
 
         resp = await client.get(
-            "/api/research/bad-leid/stream",
+            f"/api/research/{session_id}/stream",
             headers={"Last-Event-ID": "not-a-real-event-id"},
         )
     assert resp.status_code == 400
@@ -188,11 +194,12 @@ async def test_stream_empty_last_event_id_returns_400(
     endpoint docstring."""
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "empty-leid"})
+        r = await client.post("/api/research/start", json={"query": "empty leid test"})
         assert r.status_code == 201
+        session_id = r.json()["session_id"]
 
         resp = await client.get(
-            "/api/research/empty-leid/stream",
+            f"/api/research/{session_id}/stream",
             headers={"Last-Event-ID": ""},
         )
     assert resp.status_code == 400
@@ -220,9 +227,9 @@ class _CountingManager(SessionManager):
         super().__init__(db_path=db_path, langgraph=langgraph)
         self.start_call_count = 0
 
-    async def start_session(self, session_id: str) -> None:
+    async def start_session(self, *, session_id: str, query: str) -> None:
         self.start_call_count += 1
-        await super().start_session(session_id)
+        await super().start_session(session_id=session_id, query=query)
 
 
 async def test_stream_does_not_spawn_second_producer(
@@ -242,13 +249,14 @@ async def test_stream_does_not_spawn_second_producer(
     try:
         transport = httpx.ASGITransport(app=started_app)
         async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-            r = await client.post("/api/research/start", json={"session_id": "noredo-1"})
+            r = await client.post("/api/research/start", json={"query": "no second producer test"})
             assert r.status_code == 201
+            session_id = r.json()["session_id"]
             assert counting.start_call_count == 1
 
             # Drain the stream to completion (producer reaches terminal).
             await asyncio.sleep(0.6)
-            body = await _drain_stream(client, "/api/research/noredo-1/stream")
+            body = await _drain_stream(client, f"/api/research/{session_id}/stream")
 
         # The GET path read replay rows + observed terminal status; it
         # never went through `start_session`.
@@ -275,11 +283,12 @@ async def test_heartbeat_not_in_replay(
     and must never appear in replay output."""
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "hb-1"})
+        r = await client.post("/api/research/start", json={"query": "heartbeat replay test"})
         assert r.status_code == 201
+        session_id = r.json()["session_id"]
         # Wait for completion so the stream returns purely from replay.
         await asyncio.sleep(0.8)
-        body = await _drain_stream(client, "/api/research/hb-1/stream")
+        body = await _drain_stream(client, f"/api/research/{session_id}/stream")
 
     frames = _parse_sse_frames(body)
     event_lines = [f.get("event", "") for f in frames]
@@ -304,9 +313,10 @@ async def test_task_lifecycle_cleanup(started_app: FastAPI) -> None:
 
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "cleanup-1"})
+        r = await client.post("/api/research/start", json={"query": "lifecycle cleanup test"})
         assert r.status_code == 201
-        async with client.stream("GET", "/api/research/cleanup-1/stream") as resp:
+        session_id = r.json()["session_id"]
+        async with client.stream("GET", f"/api/research/{session_id}/stream") as resp:
             assert resp.status_code == 200
             # Read the first byte then disconnect.
             async for _chunk in resp.aiter_bytes():
@@ -331,10 +341,11 @@ async def test_start_then_stream_replays_all_events(
     + stream generator + DB read path work in concert."""
     transport = httpx.ASGITransport(app=started_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.post("/api/research/start", json={"session_id": "e2e-1"})
+        r = await client.post("/api/research/start", json={"query": "e2e replay test"})
         assert r.status_code == 201
+        session_id = r.json()["session_id"]
         await asyncio.sleep(0.8)
-        body = await _drain_stream(client, "/api/research/e2e-1/stream")
+        body = await _drain_stream(client, f"/api/research/{session_id}/stream")
 
     frames = _parse_sse_frames(body)
     business = [
