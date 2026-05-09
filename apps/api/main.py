@@ -4,12 +4,17 @@ Lifespan startup runs `init_db()` so subsequent requests can assume the
 schema is in place. CORS is split-configured per ADR-0002 D8.1 + Codex H3:
 `Last-Event-ID` listed in both `allow_headers` (preflight) and
 `expose_headers` (so JS can read the response header on reconnect).
+
+M1.A T7 (SDec-4): lifespan constructs a LangGraphService singleton via
+`from_settings`, mounts it on `app.state.langgraph_service`, and passes it
+to SessionManager. This replaces the LangGraphStub used during M1.0
+skeleton development. LangGraphStub is retained in langgraph_service.py for
+unit tests only.
 """
 
 from __future__ import annotations
 
 import asyncio
-import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -20,7 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.deps import get_settings
 from app.db.sqlite import init_db
 from app.routers.research import router as research_router
-from app.services.langgraph_service import LangGraphStub
+from app.services.langgraph_service import LangGraphService
 from app.services.session_manager import SessionManager
 
 
@@ -30,21 +35,24 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     aiosqlite connection (via T9/T10 deps) — the lifespan does not hold
     a long-lived shared connection.
 
-    The SessionManager singleton is process-local (per ADR-0001 D5
-    `--workers 1` constraint) and stored on `app.state` so router
-    handlers can retrieve it via `request.app.state.session_manager`."""
+    M1.A T7: constructs a LangGraphService singleton (real LLM backend)
+    from settings and stores it on app.state.langgraph_service. The
+    SessionManager receives the service instance via LangGraphProtocol
+    abstraction (ADR-0003 D11 + NN1). Both singletons are process-local
+    (per ADR-0001 D5 `--workers 1` constraint) and stored on `app.state`
+    so router handlers can retrieve them via `request.app.state.*`."""
     settings = get_settings()
     async with aiosqlite.connect(settings.LUMEN_DB_PATH) as conn:
         await init_db(conn)
 
-    # E2E knobs read from env so the Playwright `sse` project can flip
-    # them without rebuilding the API container:
-    #   LUMEN_STUB_FULL_CYCLE=1 -> append report_chunk + done events
-    #   LUMEN_STUB_INJECT_ERROR=1 -> append error event (T15 SSE-3)
-    emit_full_cycle = os.environ.get("LUMEN_STUB_FULL_CYCLE") == "1"
+    # T7 (SDec-4): LangGraphService singleton — constructed once at startup,
+    # shared across all requests. from_settings is the only call site for
+    # DASHSCOPE_API_KEY.get_secret_value() (security-reviewer requirement).
+    langgraph_service = LangGraphService.from_settings(settings)
+    app.state.langgraph_service = langgraph_service
     app.state.session_manager = SessionManager(
         db_path=settings.LUMEN_DB_PATH,
-        langgraph=LangGraphStub(emit_full_cycle=emit_full_cycle),
+        langgraph=langgraph_service,
     )
 
     try:

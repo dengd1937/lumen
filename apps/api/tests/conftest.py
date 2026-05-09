@@ -6,6 +6,10 @@ so router-level integration tests don't each duplicate the
 
 T3: also exposes `initialized_db` (async) fixture for SessionManager tests
 so both test_session_lifecycle.py and test_research_router.py can use it.
+
+M1.A T7: exposes `fake_session_manager` fixture (SDec-4 v2) that replaces
+app.state.session_manager with a FakeListChatModel-backed instance,
+avoiding real DashScope HTTP calls in integration tests.
 """
 
 from __future__ import annotations
@@ -16,9 +20,12 @@ from pathlib import Path
 import aiosqlite
 import pytest
 import pytest_asyncio
+from fastapi.testclient import TestClient
+from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
 from app.core.deps import get_settings
 from app.db.sqlite import init_db
+from app.services.session_manager import SessionManager
 
 
 @pytest.fixture
@@ -51,3 +58,38 @@ async def initialized_db(tmp_path: Path) -> AsyncIterator[Path]:
     async with aiosqlite.connect(str(db_path)) as conn:
         await init_db(conn)
     yield db_path
+
+
+@pytest.fixture
+def patch_init_chat_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Patch init_chat_model so lifespan startup uses FakeListChatModel (no real DashScope HTTP)."""
+    monkeypatch.setattr(
+        "app.services.langgraph_service.init_chat_model",
+        lambda **kwargs: FakeListChatModel(responses=[]),
+    )
+
+
+@pytest.fixture
+def fake_session_manager(
+    env_settings: Path,
+    patch_init_chat_model: None,
+) -> Iterator[SessionManager]:
+    """**Returns the lifespan-created SessionManager** (not a mock object); its underlying
+    LangGraphService uses FakeListChatModel.
+
+    T7 SDec-4 v2 (Codex HIGH #1): uses standard `with TestClient(app)` context manager so
+    lifespan enter/exit is guaranteed even if the body raises. The monkeypatched
+    init_chat_model (via `patch_init_chat_model`) ensures LangGraphService uses
+    FakeListChatModel — no real DashScope HTTP calls are triggered.
+
+    Fixture sequence:
+      1. env_settings monkeypatches DASHSCOPE_BASE_URL/LLM_MODEL etc. (with cache clear)
+      2. patch_init_chat_model patches init_chat_model -> FakeListChatModel
+      3. TestClient `with` block enters lifespan; LangGraphService.from_settings gets fake model
+      4. yield app.state.session_manager (real lifespan-created instance, no race)
+      5. TestClient `with` block exits: lifespan finally handles cleanup, monkeypatch restores
+    """
+    from main import app
+
+    with TestClient(app):
+        yield app.state.session_manager
