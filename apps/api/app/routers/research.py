@@ -13,6 +13,8 @@ GET /research/{session_id}/stream - W3C SSE replay + live channel (T10 unchanged
 from __future__ import annotations
 
 import asyncio
+import re
+import secrets
 from typing import Annotated
 
 import aiosqlite
@@ -22,9 +24,15 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from ulid import ULID
 
+from app.core.config import Settings
 from app.core.deps import get_settings
 from app.core.sse import stream_session
 from app.db.sqlite import configure_connection, lookup_seq_by_event_id
+from app.services.inject_directive import (
+    InjectCloseAfterDirective,
+    InjectDirective,
+    InjectErrorDirective,
+)
 from app.services.session_manager import (
     SessionAlreadyRunningError,
     SessionManager,
@@ -41,6 +49,73 @@ _IDEMPOTENCY_CACHE: TTLCache[str, str] = TTLCache(maxsize=1024, ttl=60.0)
 # the same client_request_id. TTL 60s matches idempotency window; auto-expires
 # stale locks so the dict does not grow unboundedly.
 _IDEMPOTENCY_LOCKS: TTLCache[str, asyncio.Lock] = TTLCache(maxsize=1024, ttl=60.0)
+
+# T11 D-TM: ephemeral inject_directive store keyed by session_id, populated
+# by POST /start when test request validates double-guard. GET /stream
+# reads it to drive stream_session's early-close behavior. TTL 5min covers
+# session lifetime; no cross-session pollution because each entry is keyed
+# by unique session_id.
+_INJECT_DIRECTIVES: TTLCache[str, InjectDirective] = TTLCache(maxsize=1024, ttl=300.0)
+
+
+def _is_test_request(request: Request, settings: Settings) -> bool:
+    """Double-guard testing-mode check (D-TM v2.1).
+
+    Returns True only when ALL conditions hold:
+    1. settings.TESTING_MODE is True (env: LUMEN_TESTING_MODE=true)
+    2. settings.TESTING_TOKEN is not None (env: LUMEN_TESTING_TOKEN=<value>)
+    3. request has X-Lumen-Test-Token header
+    4. header value matches settings.TESTING_TOKEN.get_secret_value() via
+       secrets.compare_digest (constant-time, prevents timing attack)
+
+    Returns False otherwise. Production never enables TESTING_MODE.
+    """
+    if not settings.TESTING_MODE:
+        return False
+    if settings.TESTING_TOKEN is None:
+        return False
+    header = request.headers.get("X-Lumen-Test-Token")
+    if header is None:
+        return False
+    return secrets.compare_digest(header, settings.TESTING_TOKEN.get_secret_value())
+
+
+# Strict regex: prefix uses only ASCII alphanumerics + colons/underscores
+# in a fixed shape; the (.*) tail captures the rest of the query verbatim
+# (re.DOTALL so newlines in the user's query are preserved).
+_INJECT_CLOSE_AFTER_RE = re.compile(r"^__inject_close_after:(\d{1,3})__(.*)$", re.DOTALL)
+_INJECT_ERROR_RE = re.compile(r"^__inject_error__(.*)$", re.DOTALL)
+
+
+def _parse_inject_directive(query: str) -> tuple[InjectDirective | None, str]:
+    """Parse query for testing prefix; return (directive, clean_query).
+
+    NN2 (v2.1): strips prefix from clean_query so audit_log + LangGraph
+    nodes never see the testing prefix literal (would otherwise pollute
+    LLM output / DB query column).
+    NNN3 (v2.2): InjectCloseAfterDirective.n bounded to [1, 100]; out-of-range
+    treated as malformed (returns None directive + original query unchanged).
+
+    Returns:
+        (None, query) if no prefix matches (production path).
+        (InjectCloseAfterDirective(n), clean_query) for __inject_close_after:N__
+            where 1 <= N <= 100.
+        (InjectErrorDirective(), clean_query) for __inject_error__.
+        (None, query) for malformed prefix (treated as plain query).
+
+    Pure parser — does NOT enforce TESTING_MODE guard. Caller must guard
+    via _is_test_request before passing user input to this function.
+    """
+    m = _INJECT_CLOSE_AFTER_RE.match(query)
+    if m:
+        n = int(m.group(1))
+        if 1 <= n <= 100:
+            return InjectCloseAfterDirective(n=n), m.group(2)
+        return None, query  # n out of bound -> malformed, treat as normal
+    m = _INJECT_ERROR_RE.match(query)
+    if m:
+        return InjectErrorDirective(), m.group(1)
+    return None, query
 
 
 class StartSessionBody(BaseModel):
@@ -78,16 +153,26 @@ async def start_session(
     """
     session_manager: SessionManager = request.app.state.session_manager
 
+    # T11 D-TM: resolve inject directive before branching on client_request_id.
+    # _is_test_request enforces double-guard; _parse_inject_directive strips
+    # prefix from clean_query (NN2) so DB / LangGraph never see the test prefix.
+    directive: InjectDirective | None = None
+    clean_query: str = body.query
+    if _is_test_request(request, get_settings()):
+        directive, clean_query = _parse_inject_directive(body.query)
+
     # No client_request_id: no idempotency, create directly.
     if body.client_request_id is None:
         session_id = str(ULID())
         try:
-            await session_manager.start_session(session_id=session_id, query=body.query)
+            await session_manager.start_session(session_id=session_id, query=clean_query)
         except SessionAlreadyRunningError as exc:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Session {exc.session_id!r} is already running",
             ) from None
+        if directive is not None:
+            _INJECT_DIRECTIVES[session_id] = directive
         return StartSessionResponse(session_id=session_id)
 
     # Has client_request_id: per-key lock wraps read-await-write to prevent TOCTOU.
@@ -108,13 +193,15 @@ async def start_session(
         # Create inside lock: concurrent same-key requests are serialized.
         session_id = str(ULID())
         try:
-            await session_manager.start_session(session_id=session_id, query=body.query)
+            await session_manager.start_session(session_id=session_id, query=clean_query)
         except SessionAlreadyRunningError as exc:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Session {exc.session_id!r} is already running",
             ) from None
         _IDEMPOTENCY_CACHE[body.client_request_id] = session_id
+        if directive is not None:
+            _INJECT_DIRECTIVES[session_id] = directive
 
     return StartSessionResponse(session_id=session_id)
 
@@ -176,11 +263,15 @@ async def stream_session_endpoint(
                 )
             last_seq = resolved
 
+    # T11: look up any inject directive stored by POST /start for this session.
+    inject_directive = _INJECT_DIRECTIVES.get(session_id)
+
     return StreamingResponse(
         stream_session(
             session_id=session_id,
             db_path=db_path,
             last_seq=last_seq,
+            inject_directive=inject_directive,
         ),
         media_type="text/event-stream",
         headers={
