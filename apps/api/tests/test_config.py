@@ -8,7 +8,7 @@ service access (DASHSCOPE_API_KEY) or local-state location (LUMEN_DB_PATH).
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
+from pydantic import SecretStr, ValidationError
 
 from app.core.config import Settings
 from app.core.deps import get_settings
@@ -25,6 +25,7 @@ def test_settings_missing_dashscope_raises(
     at startup is a fatal config error — no silent fallback."""
     monkeypatch.delenv("DASHSCOPE_API_KEY", raising=False)
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
     with pytest.raises(ValidationError) as exc_info:
         Settings(_env_file=None)  # type: ignore[call-arg]
@@ -41,6 +42,7 @@ def test_settings_missing_db_path_raises(
 ) -> None:
     """ADR-0001 D5: SQLite path is deployment-specific. Missing fails fast."""
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     monkeypatch.delenv("LUMEN_DB_PATH", raising=False)
 
     with pytest.raises(ValidationError) as exc_info:
@@ -58,6 +60,7 @@ def test_settings_constructs_with_required_env(
 ) -> None:
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
     s = Settings(_env_file=None)  # type: ignore[call-arg]
     # SecretStr equality requires .get_secret_value() — bare comparison
@@ -78,6 +81,7 @@ def test_data_source_literal_accepts_mock_and_sse(
 ) -> None:
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
     monkeypatch.setenv("DATA_SOURCE", "mock")
     assert Settings(_env_file=None).DATA_SOURCE == "mock"  # type: ignore[call-arg]
@@ -95,6 +99,7 @@ def test_data_source_defaults_to_mock_when_unset(
     mask the default."""
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     monkeypatch.delenv("DATA_SOURCE", raising=False)
 
     s = Settings(_env_file=None)  # type: ignore[call-arg]
@@ -106,6 +111,7 @@ def test_data_source_literal_rejects_other_values(
 ) -> None:
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     monkeypatch.setenv("DATA_SOURCE", "bogus")
 
     with pytest.raises(ValidationError) as exc_info:
@@ -125,6 +131,7 @@ def test_get_settings_caches_instance(
     instance across requests (avoid re-parsing env per request)."""
     monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
     # Reset cache so this test sees current env.
     get_settings.cache_clear()
@@ -147,6 +154,7 @@ def test_repr_does_not_leak_api_key(
     print(settings) MUST see a masked value."""
     monkeypatch.setenv("DASHSCOPE_API_KEY", "real-secret-shouldnotleak-9999")
     monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     s = Settings(_env_file=None)  # type: ignore[call-arg]
 
     rendered = f"{s!r} {s!s}"
@@ -162,6 +170,7 @@ def test_validation_error_does_not_leak_partial_input(
     embed the input dict (which contains successfully-parsed fields like
     DASHSCOPE_API_KEY) when raising over a different missing field."""
     monkeypatch.setenv("DASHSCOPE_API_KEY", "real-secret-validateleak-1234")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     monkeypatch.delenv("LUMEN_DB_PATH", raising=False)
 
     with pytest.raises(ValidationError) as exc_info:
@@ -170,3 +179,129 @@ def test_validation_error_does_not_leak_partial_input(
     assert "real-secret-validateleak-1234" not in err_text
     # The missing field name itself is fine to surface.
     assert "LUMEN_DB_PATH" in err_text
+
+
+# ---------------------------------------------------------------------------
+# T1 M1.A — LLM + TESTING_MODE + TESTING_TOKEN (ADR-0003 D11 + D-TM v2.1)
+# ---------------------------------------------------------------------------
+
+
+def test_settings_missing_dashscope_base_url_raises(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-0003 D11: DASHSCOPE_BASE_URL is required; missing raises ValidationError."""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.delenv("DASHSCOPE_BASE_URL", raising=False)
+
+    with pytest.raises(ValidationError) as exc_info:
+        Settings(_env_file=None)  # type: ignore[call-arg]
+    assert "DASHSCOPE_BASE_URL" in str(exc_info.value)
+
+
+def test_settings_constructs_with_dashscope_base_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """设了 DASHSCOPE_BASE_URL 时 settings.DASHSCOPE_BASE_URL 等于设置的值。"""
+    url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", url)
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert url == s.DASHSCOPE_BASE_URL
+
+
+def test_settings_missing_llm_model_uses_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-0003 D11: LLM_MODEL 未设时默认 qwen-max。"""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.delenv("LLM_MODEL", raising=False)
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.LLM_MODEL == "qwen-max"
+
+
+def test_settings_llm_model_can_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """设 LLM_MODEL=qwen-plus 时 settings.LLM_MODEL == "qwen-plus"。"""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.setenv("LLM_MODEL", "qwen-plus")
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.LLM_MODEL == "qwen-plus"
+
+
+def test_settings_testing_mode_default_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-0003 D-TM: 未设 TESTING_MODE 时默认 False。"""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.delenv("TESTING_MODE", raising=False)
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.TESTING_MODE is False
+
+
+def test_settings_testing_mode_true_from_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """设 TESTING_MODE=true 时 settings.TESTING_MODE is True。"""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.setenv("TESTING_MODE", "true")
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.TESTING_MODE is True
+
+
+def test_settings_testing_token_default_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-0003 D-TM: 未设 TESTING_TOKEN 时默认 None。"""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.delenv("TESTING_TOKEN", raising=False)
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.TESTING_TOKEN is None
+
+
+def test_settings_testing_token_is_secret_str(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-0003 D-TM: TESTING_TOKEN is SecretStr; repr must not leak the raw value."""
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key-1234")
+    monkeypatch.setenv("LUMEN_DB_PATH", "/tmp/lumen-test.db")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    monkeypatch.setenv("TESTING_TOKEN", "e2e-test-secret")
+
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert isinstance(s.TESTING_TOKEN, SecretStr)
+    assert "e2e-test-secret" not in repr(s)
+
+
+# ---------------------------------------------------------------------------
+# T1 R8 — LangGraph dependency (ADR-0003 SDec-1)
+# ---------------------------------------------------------------------------
+
+
+def test_pyproject_langgraph_dependency_present() -> None:
+    """ADR-0003 SDec-1: langgraph dependency must be installed.
+    T0 spike verified 1.x API; pyproject.toml pins langgraph>=1.1.8."""
+    import importlib.metadata
+
+    dist = importlib.metadata.distribution("langgraph")
+    assert dist.version, "langgraph must be installed"
+    major = int(dist.version.split(".")[0])
+    assert major >= 1, f"Expected langgraph>=1.x, got {dist.version}"
